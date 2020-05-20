@@ -3,12 +3,16 @@
 const IPFS = require('ipfs');
 const all = require('it-all');
 const blessed = require('blessed');
+const Room = require('ipfs-pubsub-room');
 
+let topic = '__wut__chat__';
 
 function createPubsubCallback (node, output) {
 
   function handleMessage (message) {
+    output.log('...PUBSUB...');
     output.log(message.data.toString());
+    output.log('.../PUBSUB...');
   }
 
   return function (message) {
@@ -18,9 +22,9 @@ function createPubsubCallback (node, output) {
 }
 
 async function subscribe (node, id, callback) {
-  let topic = '__wut__chat__';
-  await node.pubsub.subscribe(topic, callback);
-  await node.pubsub.publish(topic, `${id} has subscribed!`);
+
+  // await node.pubsub.subscribe(topic, callback);
+  // await node.pubsub.publish(topic, `${id} has subscribed!`);
 }
 
 async function main () {
@@ -28,6 +32,7 @@ async function main () {
   const node = await IPFS.create();
   const version = await node.version();
   const nodeId = await node.id();
+  const room = new Room(node, topic);
 
   const screen = blessed.screen({
     smartCSR: true,
@@ -140,9 +145,21 @@ async function main () {
   output.log('IPFS Node Id:', nodeId);
   const _id = nodeId.id;
 
-  const callback = createPubsubCallback(node, output);
+  // const callback = createPubsubCallback(node, output);
 
-  subscribe(node, _id, callback);
+  // subscribe(node, _id, callback);
+
+  room.on('subscribed', () => {
+    output.log(`Now connected to room: ${topic}`);
+  });
+
+  room.on('peer joined', (peer) => {
+    output.log('Peer joined the room', peer);
+  });
+
+  room.on('peer left', (peer) => {
+    output.log('Peer left...', peer);
+  });
 
 }
 
