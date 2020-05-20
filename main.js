@@ -7,25 +7,6 @@ const Room = require('ipfs-pubsub-room');
 
 let topic = '__wut__chat__';
 
-function createPubsubCallback (node, output) {
-
-  function handleMessage (message) {
-    output.log('...PUBSUB...');
-    output.log(message.data.toString());
-    output.log('.../PUBSUB...');
-  }
-
-  return function (message) {
-    handleMessage(message);
-  };
-
-}
-
-async function subscribe (node, id, callback) {
-
-  // await node.pubsub.subscribe(topic, callback);
-  // await node.pubsub.publish(topic, `${id} has subscribed!`);
-}
 
 async function main () {
 
@@ -152,10 +133,7 @@ async function main () {
   });
 
   screen.append(input);
-
   screen.append(output);
-
-  // Render the screen.
   screen.render();
 
   output.log('welcome');
@@ -166,11 +144,6 @@ async function main () {
   output.log('IPFS node is initialized!');
   output.log('IPFS Version:', version.version);
   output.log('IPFS Node Id:', nodeId);
-  const _id = nodeId.id;
-
-  // const callback = createPubsubCallback(node, output);
-
-  // subscribe(node, _id, callback);
 
   room.on('subscribed', () => {
     output.log(`Now connected to room: ${topic}`);
@@ -184,6 +157,11 @@ async function main () {
     output.log(`Peer left: ${peer}`);
   });
 
+  room.on('message', (message) => {
+    output.log(`${message.from}: ${message.data}`);
+  });
+
+
   let interval = setInterval(() => {
     let peers = room.getPeers();
     peersList.log(`Peers: ${peers}`);
@@ -191,7 +169,7 @@ async function main () {
 
 }
 
-process.on('uncaughtException', function(error) {
+process.on('uncaughtException', (error) => {
   console.log(error);
 });
 
