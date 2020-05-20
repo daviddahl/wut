@@ -9,11 +9,13 @@
   "author": "David Dahl <ddahl@nulltxt.se>",
   "license": "MIT",
   "dependencies": {
+    "blessed": "^0.1.81",
     "ipfs": "^0.44.0",
     "ipfs-pubsub-room": "*",
     "it-all": "^1.0.1",
-    "blessed": "^0.1.81",
-    "tweetnacl": ""
+    "tweetnacl": "",
+    "tweetnacl-util": "",
+    "uuid": "^8.1.0"
   },
   "devDependencies": {}
 }
