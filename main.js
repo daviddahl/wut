@@ -55,7 +55,28 @@ async function main () {
     label: 'WUT: IPFS + TweetNacl Chat',
     top: 0,
     left: 0,
-    width: '100%',
+    width: '60%',
+    height: 20,
+    tags: true,
+    border: {
+      type: 'line'
+    },
+    style: {
+      fg: 'green',
+      bg: 'black',
+      border: {
+        fg: '#f0f0f0'
+      }
+    }
+  });
+
+  const peersList = blessed.Log({
+    parent: screen,
+    scrollable: true,
+    label: 'Peers',
+    top: 0,
+    left: '60%',
+    width: '40%',
     height: 20,
     tags: true,
     border: {
@@ -105,7 +126,9 @@ async function main () {
     // output.log(key);
     switch (key.name) {
     case RETURN:
-      output.log(input.getValue());
+      let msg = input.getValue();
+      room.broadcast(msg);
+      output.log(msg);
       screen.render();
       input.clearValue();
       break;
@@ -154,12 +177,17 @@ async function main () {
   });
 
   room.on('peer joined', (peer) => {
-    output.log('Peer joined the room', peer);
+    output.log(`Peer joined the room: ${peer}`);
   });
 
   room.on('peer left', (peer) => {
-    output.log('Peer left...', peer);
+    output.log(`Peer left: ${peer}`);
   });
+
+  let interval = setInterval(() => {
+    let peers = room.getPeers();
+    peersList.log(`Peers: ${peers}`);
+  }, 5000);
 
 }
 
