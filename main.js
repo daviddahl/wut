@@ -5,10 +5,10 @@ const all = require('it-all');
 const blessed = require('blessed');
 
 
-function createPubsubCallback(node, output) {
+function createPubsubCallback (node, output) {
 
-  function handleMessage(message) {
-    output.log(message);
+  function handleMessage (message) {
+    output.log(message.data.toString());
   }
 
   return function (message) {
@@ -17,11 +17,11 @@ function createPubsubCallback(node, output) {
 
 }
 
-function subscribe (node, callback) {
+async function subscribe (node, id, callback) {
   let topic = '__wut__chat__';
-  node.pubsub.subscribe(topic, callback);
+  await node.pubsub.subscribe(topic, callback);
+  await node.pubsub.publish(topic, `${id} has subscribed!`);
 }
-
 
 async function main () {
 
@@ -138,10 +138,11 @@ async function main () {
   output.log('IPFS node is initialized!');
   output.log('IPFS Version:', version.version);
   output.log('IPFS Node Id:', nodeId);
+  const _id = nodeId.id;
 
   const callback = createPubsubCallback(node, output);
 
-  subscribe(node, callback);
+  subscribe(node, _id, callback);
 
 }
 
