@@ -1,3 +1,9 @@
+/*
+  WUT? : a very simple terminal-based chat application runing on top of IPFS, tweetnacl-js & blessed
+
+  Author: David Dahl <ddahl@nulltxt.se>
+*/
+
 'use strict';
 
 const IPFS = require('ipfs');
@@ -109,7 +115,7 @@ async function main () {
     case RETURN:
       let msg = input.getValue();
       room.broadcast(msg);
-      output.log(msg);
+      // output.log(msg);
       screen.render();
       input.clearValue();
       break;
