@@ -22,6 +22,16 @@ const  {
 
 const topic = '__wut__chat__';
 
+const uiConfiguration = {
+  style: {
+    fg: 'blue',
+    bg: null,
+    border: {
+      fg: '#f0f0f0'
+    }
+  }
+};
+
 const configuration = {
   handle: null,
   bio: 'Web 3.0 Enthusiast',
@@ -46,7 +56,8 @@ async function main () {
 
   const screen = blessed.screen({
     smartCSR: true,
-    dockBorders: true
+    dockBorders: true,
+    height: 20,
   });
 
   const title = 'WUT?';
@@ -66,64 +77,107 @@ async function main () {
     top: 0,
     left: 0,
     width: '60%',
-    height: 20,
+    height: '90%',
     tags: true,
     border: {
       type: 'line'
     },
     style: {
-      fg: 'green',
-      bg: 'black',
+      fg: 'blue',
+      bg: null,
       border: {
         fg: '#f0f0f0'
       }
     }
   });
 
-  const peersList = blessed.Log({
-    parent: screen,
-    scrollable: true,
+  const peersWrapper = blessed.Box({
     label: ' Peers ',
-    top: 0,
-    left: '60%',
-    width: '40%',
-    height: 20,
-    tags: true,
     border: {
       type: 'line'
     },
+    parent: screen,
+    top: 0,
+    left: '60%',
+    width: '40%',
+    height: '90%',
     style: {
-      fg: 'green',
-      bg: 'black',
+      fg: 'blue',
+      bg: null,
       border: {
         fg: '#f0f0f0'
+      },
+      focus: {
+        border: {
+          fg: 'blue',
+        }
       }
+    }
+  });
+
+  const peersList = blessed.Table({
+    parent: peersWrapper,
+    scrollable: true,
+    top: 0,
+    left: 0,
+    width: '98%',
+    height: '100%',
+    tags: true,
+  });
+
+  peersWrapper.on('keypress', (value, key) => {
+
+    const TAB = 'tab';
+    const RETURN = 'return';
+    const BACKSPACE = 'backspace';
+    const SCROLL_UP = '\u001bOA';
+    const SCROLL_DOWN = '\u001bOB';
+    const UP = 'up';
+    const DOWN = 'down';
+
+    // TODO: handle arrows up / down, return
+
+    // output.log(key);
+    switch (key.name) {
+    case TAB:
+      input.focus();
+      return;
+    default:
+      break;
     }
   });
 
   input = blessed.Textbox({
     label: ' Enter a message: ',
     parent: screen,
-    top: 20,
+    top: '90%',
     left: 0,
-    width: '100%',
-    height: '10%',
+    width: '99.9%',
+    height: 4,
     tags: true,
     border: {
       type: 'line'
     },
     scrollbar: false,
     style: {
-      fg: 'green',
-      bg: 'black',
+      fg: 'blue',
+      bg: null,
       border: {
-        fg: '#f0f0f0'
-      }
+        fg: '#f0f0f0',
+        bg: null,
+      },
+      focus: {
+        border: {
+          fg: 'blue',
+          bg: null,
+        }
+      },
     }
   });
 
   input.on('keypress', (value, key) => {
 
+    const TAB = 'tab';
     const RETURN = 'return';
     const BACKSPACE = 'backspace';
     const SCROLL_UP = '\u001bOA';
@@ -135,6 +189,9 @@ async function main () {
 
     // output.log(key);
     switch (key.name) {
+    case TAB:
+      peersWrapper.focus();
+      return;
     case RETURN:
       let msg = input.getValue();
 
@@ -174,8 +231,13 @@ async function main () {
   screen.render();
 
   output.log('................Welcome');
+
   output.log('...................To');
+
   output.log('..................WUT\n');
+
+  output.log('\n\n  *** This is the LOBBY. It is *plaintext* group chat ***  \n\n');
+
   output.log(`Your NaCl public key is: ${configuration.keyPair.publicKey}\n`);
   input.focus();
 
@@ -200,14 +262,27 @@ async function main () {
       let msg = JSON.parse(message.data);
       if (msg.messageType) {
         if (msg.messageType == 'profile') {
+          // update peerprofile:
+          configuration.peerProfiles[message.from] = {
+            id: message.from,
+            handle: msg.handle,
+            bio: msg.bio,
+            publicKey: msg.publicKey,
+          };
           return output.log(`*** Profile broadcast: ${message.from} is now ${msg.handle}`);
         }
       }
     } catch (ex) {}
+
+    // Handle peer refresh request
+    if (message.data == 'peer-refresh') {
+      broadcastProfile(message.from);
+    }
+
     return output.log(`${message.from}: ${message.data}`);
   });
 
-  const broadcastProfile = () => {
+  const broadcastProfile = (cid) => {
     let profile = JSON.stringify({
       messageType: 'profile',
       handle: configuration.handle,
@@ -215,77 +290,113 @@ async function main () {
       bio: configuration.bio,
       id: nodeId.id,
     });
-    room.broadcast(profile);
+
+    if (cid) {
+      room.sendTo(cid, profile);
+    } else {
+      room.broadcast(profile);
+    }
   };
 
-
   let peers = room.getPeers();
-  configuration.peers = peers;
-  peersList.log(`Peers: ${peers}`);
+  configuration.peers = [peers];
+  if (peers.length) {
+    peersList.setData(configuration.peers);
+    screen.render();
+  }
 
   let interval = setInterval(() => {
     let peers = room.getPeers();
-    configuration.peers = peers;
-    peersList.setContent('');
-    peersList.log(`Peers: ${peers}`);
-  }, 5000);
+    configuration.peers = [peers];
+    if (peers.length) {
+      peersList.setData(configuration.peers);
+      screen.render();
+    }
+  }, 7000);
 
-}
+  function invitePeerToPrivateRoom(peerId) {
+    // Invite a peer to a private, encrypted chat
 
-function invitePeerToPrivateRoom(peerId) {
-  // Invite a peer to a private, encrypted chat
-
-}
-
-const whichCommand = (input) => {
-  // output.log(`**** INPUT: ${input}`);
-  if (!input.startsWith('/')) {
-    return null;
   }
 
-  let firstSpace = input.indexOf(' ');
-  if (firstSpace == -1) {
-    return null;
-  }
+  // TODO: add /help function
 
-  let comm = input.substring(0, firstSpace);
-  // output.log(`comm: ${comm}`);
-  switch (comm) {
-  case '/handle':
-    return 'handle';
-    break;
-  case '/peer':
-    return 'peer';
-    break;
-  default:
-    return null;
-  }
-};
+  // TODO: add /peer find <name> / <cid>
 
-const handle = (data, output) => {
-  data = data.split(" ");
-  if (data.length != 2) {
-    output.log(`*** ERR: invalid input for /handle: ${input}`);
+  // TODO add /peer chat <name> / <cid>
+
+  const whichCommand = (input) => {
+    // output.log(`**** INPUT: ${input}`);
+    if (!input.startsWith('/')) {
+      return null;
+    }
+
+    let firstSpace = input.indexOf(' ');
+    if (firstSpace == -1) {
+      return null;
+    }
+
+    let comm = input.substring(0, firstSpace);
+    // output.log(`comm: ${comm}`);
+    switch (comm) {
+    case '/handle':
+      return 'handle';
+      break;
+    case '/peer':
+      return 'peer';
+      break;
+    default:
+      return null;
+    }
+  };
+
+  const handle = (data, output) => {
+    data = data.split(" ");
+    if (data.length != 2) {
+      output.log(`*** ERR: invalid input for /handle: ${data}`);
+      input.clearValue();
+      return;
+    }
+
+    configuration.handle = data[1];
+    // output.log(`*** your /handle is now ${data[1]}`);
     input.clearValue();
-    return;
-  }
+    broadcastProfile();
+  };
 
-  configuration.handle = data[1];
-  output.log(`*** your /handle is now ${data[1]}`);
-  input.clearValue();
-};
+  const peerRefresh = () => {
+    // get all peer profiles
+    for (let idx in configuration.peerProfiles) {
+      room.sendTo(configuration.peerProfiles[idx].id, 'get-profile');
+    }
+  };
 
-const peer = (data, output) => {
-  // peer commands
+  const peer = (data) => {
+    // peer commands
+    data = data.split(" ");
+    if (data.length != 2) {
+      output.log(`*** ERR: invalid input for /peer: ${data}`);
+      input.clearValue();
+      return;
+    }
 
-};
+    switch (data[1]) {
+    case 'refresh':
+      peerRefresh();
+      break;
+    default:
+      break;
+    }
 
-const commands = {
-  handle: handle,
-  peer: peer,
-};
+    input.clearValue();
+  };
 
+  const commands = {
+    handle: handle,
+    peer: peer,
+  };
 
+}
 
 process.on('uncaughtException', (error) => {
   console.log(error);

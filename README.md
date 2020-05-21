@@ -1,5 +1,14 @@
 # wut
+
 IPFS-based chat
+
+![](img/wut-screen.png)
+
+## Goals
+
+* Serverless 'lobby' chat multiple participants
+* Serverless E2E encrypted chat for 2 participants (at first)
+* As nerdy as possbile, hence the `ncurses` style
 
 ## Install
 
