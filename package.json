@@ -15,7 +15,8 @@
     "it-all": "^1.0.1",
     "tweetnacl": "",
     "tweetnacl-util": "",
-    "uuid": "^8.1.0"
+    "uuid": "^8.1.0",
+    "winston": "^3.2.1"
   },
   "devDependencies": {}
 }

@@ -21,6 +21,8 @@ const {
 } = require('tweetnacl-util');
 
 const { e2eUI } = require('./lib/ui.js');
+const { openDirectMessage } = require('./lib/messages.js');
+const { logger } = require('./lib/logger.js');
 
 const topic = '__wut__chat__';
 
@@ -69,12 +71,13 @@ async function main () {
   screen.title = title;
 
   // Quit on Escape, q, or Control-C.
-  screen.key(['escape', 'q', 'C-c'], function(ch, key) {
+  screen.key(['C-c'], function(ch, key) {
     // TODO: gracefully shutdown IPFS node
     return process.exit(0);
   });
 
   output = blessed.Log({
+    name: 'main-output',
     parent: screen,
     scrollable: true,
     label: ' WUT: IPFS + TweetNacl Chat ',
@@ -96,6 +99,7 @@ async function main () {
   });
 
   const peersWrapper = blessed.Box({
+    name: 'peers-wrapper',
     label: ' Peers ',
     border: {
       type: 'line'
@@ -154,6 +158,7 @@ async function main () {
   input = blessed.Textbox({
     label: ' Enter a message: ',
     parent: screen,
+    name: 'main-input',
     top: '90%',
     left: 0,
     width: '99.9%',
@@ -275,9 +280,10 @@ async function main () {
       if (msg.messageType) {
         if (msg.messageType == PROFILE_MSG) {
           // update peerprofile:
+          output.log(`message: profile... ${msg.handle}`);
           configuration.peerProfiles[message.from] = {
             id: message.from,
-            handle: msg.handle,
+            handle: msg.handle.trim(),
             bio: msg.bio,
             publicKey: msg.publicKey,
           };
@@ -297,67 +303,38 @@ async function main () {
   });
 
   const handleDirectMessage = (fromCID, msg) => {
-    // Check for existing e2eUI
     let ui;
 
+    // Check for existing e2eUI
     try {
       ui = e2eMessages[fromCID].ui;
     } catch(ex) {
       // establish the UI, accept first message
       // TODO: whitelisting of publicKeys
-      ui = e2eUI(screen, fromCID);
+      let profile = configuration.peerProfiles[fromCID];
+      ui = e2eUI(screen, profile, configuration, room);
+
       e2eMessages[fromCID] = {ui: ui};
     }
 
-    // Make sure we have the from PublicKey!
-    let  pubKey;
-
+    // Decrypt `msg.content`,  msg.nonce, msg.authorPubKey, etc
     try {
-      pubKey = configuration['peerProfiles']['publicKey'];
+      let plaintext = openDirectMessage(msg, configuration);
+      ui.output.log(`${msg.handle}: ${plaintext}`);
     } catch (ex) {
-      // We do not have the publickey for this peer!?
-      ui.log(`Cannot decrypt messages from ${msg.handle}`);
-      return;
-    }
-
-    // Decrypt `msg.content` with pubKey, msg.nonce
-    try {
-      const plaintext = box.open(
-        msg.content,
-        msg.nonce,
-        pubKey,
-        configuration.keyPair.privateKey
-      );
-      ui.log(`${msg.handle}: ${plaintext}`);
-    } catch (ex) {
-      ui.log(`***`);
-      ui.log(`Cannot decrypt messages from ${msg.handle}`);
-      ui.log(`${ex}`);
-      ui.log(`***`);
+      ui.output.log(`***`);
+      ui.output.log(`Cannot decrypt messages from ${msg.handle}`);
+      ui.output.log(`${ex}`);
+      ui.output.log(`***`);
       return;
     }
   };
 
-  const createDirectMessage = (profile, msg) => {
-    // check if we have a UI for the DM or create one
-
-    // a DM will look like:
-    // {
-    //   handle: <handle>,
-    //   toCID: <cid>,
-    //   fromCID: <cid>,
-    //   fromHandle: <handle>,
-    //   nonce: <nonce>,
-    //   content: <encrypted data>,
-    //   authorPubKey: <pubKey>,
-    // }
-
-  };
 
   const broadcastProfile = (cid) => {
     let profile = JSON.stringify({
       messageType: 'profile',
-      handle: configuration.handle,
+      handle: configuration.handle.trim(),
       publicKey: configuration.keyPair.publicKey,
       bio: configuration.bio,
       id: nodeId.id,
@@ -424,7 +401,7 @@ async function main () {
     }
 
     // TODO: Do not allow duplicate handles!
-    configuration.handle = data[1];
+    configuration.handle = data[1].trim();
     // output.log(`*** your /handle is now ${data[1]}`);
     input.clearValue();
     broadcastProfile();
@@ -471,26 +448,28 @@ async function main () {
 
     const getProfile = (id) => {
       let profile;
+      output.log(`getProfile(${id})`);
+      output.log(JSON.stringify(configuration.peerProfiles));
       for (let idx in configuration.peerProfiles) {
-        if (idx == id) {
+        output.log(idx);
+        if (id == idx) {
           return configuration.peerProfiles[idx];
         }
-        if (idx == configuration.peerProfiles[idx].handle) {
+        if (id == configuration.peerProfiles[idx].handle) {
           return configuration.peerProfiles[idx];
         }
         return null;
       }
     };
 
-    const profile = getProfile(data[1]);
+    const profile = getProfile(data[1].trim()); // TODO: trim all data submitted via the input!
     if (!profile) {
       return output.log(`*** Error; cannot get profile for ${data[1]}`);
     }
-    const ui = e2eUI(screen);
-    e2eMessages[profile.cid] = {ui: ui};
-    // TODO: make sure ui has reference to input and output
-
-
+    const ui = e2eUI(screen, profile, room);
+    e2eMessages[profile.id] = {ui: ui};
+    // UI is created, focus the new input
+    ui.input.focus();
   };
 
   const commands = {
