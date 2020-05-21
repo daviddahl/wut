@@ -13,14 +13,18 @@ const Room = require('ipfs-pubsub-room');
 const { v4: uuidv4 } = require('uuid');
 
 const { box, secretbox, randomBytes } = require('tweetnacl');
-const  {
+const {
   decodeUTF8,
   encodeUTF8,
   encodeBase64,
   decodeBase64
 } = require('tweetnacl-util');
 
+const { e2eUI } = require('./lib/ui.js');
+
 const topic = '__wut__chat__';
+
+const e2eMessages = {};
 
 const uiConfiguration = {
   style: {
@@ -187,23 +191,19 @@ async function main () {
 
     // TODO: handle control-a, -x, etc
 
-    // output.log(key);
     switch (key.name) {
     case TAB:
       peersWrapper.focus();
       return;
     case RETURN:
       let msg = input.getValue();
-
       let comm = whichCommand(msg);
-
       if (comm) {
         commands[comm](msg, output);
         return;
       }
 
       room.broadcast(msg);
-      // output.log(msg);
       screen.render();
       input.clearValue();
       break;
@@ -230,14 +230,15 @@ async function main () {
   screen.append(output);
   screen.render();
 
-  output.log('................Welcome');
+  output.log('................... Welcome ...............');
 
-  output.log('...................To');
+  output.log('................... To ....................');
 
-  output.log('..................WUT\n');
+  output.log('................... WUT ...................\n');
 
   output.log('\n\n  *** This is the LOBBY. It is *plaintext* group chat ***  \n\n');
 
+  // TODO: Display public key as QR CODE
   output.log(`Your NaCl public key is: ${configuration.keyPair.publicKey}\n`);
   input.focus();
 
@@ -251,17 +252,28 @@ async function main () {
 
   room.on('peer joined', (peer) => {
     output.log(`Peer joined the room: ${peer}`);
+    if (peer == nodeId.id) {
+      if (!configuration.handle) {
+        // set default for now
+        configuration.handle = nodeId.id;
+      }
+      // Its YOU!
+      broadcastProfile();
+    }
   });
 
   room.on('peer left', (peer) => {
     output.log(`Peer left: ${peer}`);
   });
 
+  const DIRECT_MSG = 'dm';
+  const PROFILE_MSG = 'profile';
+
   room.on('message', (message) => {
     try {
       let msg = JSON.parse(message.data);
       if (msg.messageType) {
-        if (msg.messageType == 'profile') {
+        if (msg.messageType == PROFILE_MSG) {
           // update peerprofile:
           configuration.peerProfiles[message.from] = {
             id: message.from,
@@ -270,6 +282,8 @@ async function main () {
             publicKey: msg.publicKey,
           };
           return output.log(`*** Profile broadcast: ${message.from} is now ${msg.handle}`);
+        } else if (msg.messageType == DIRECT_MSG) {
+          handleDirectMessage(message.from, msg);
         }
       }
     } catch (ex) {}
@@ -281,6 +295,64 @@ async function main () {
 
     return output.log(`${message.from}: ${message.data}`);
   });
+
+  const handleDirectMessage = (fromCID, msg) => {
+    // Check for existing e2eUI
+    let ui;
+
+    try {
+      ui = e2eMessages[fromCID].ui;
+    } catch(ex) {
+      // establish the UI, accept first message
+      // TODO: whitelisting of publicKeys
+      ui = e2eUI(screen, fromCID);
+      e2eMessages[fromCID] = {ui: ui};
+    }
+
+    // Make sure we have the from PublicKey!
+    let  pubKey;
+
+    try {
+      pubKey = configuration['peerProfiles']['publicKey'];
+    } catch (ex) {
+      // We do not have the publickey for this peer!?
+      ui.log(`Cannot decrypt messages from ${msg.handle}`);
+      return;
+    }
+
+    // Decrypt `msg.content` with pubKey, msg.nonce
+    try {
+      const plaintext = box.open(
+        msg.content,
+        msg.nonce,
+        pubKey,
+        configuration.keyPair.privateKey
+      );
+      ui.log(`${msg.handle}: ${plaintext}`);
+    } catch (ex) {
+      ui.log(`***`);
+      ui.log(`Cannot decrypt messages from ${msg.handle}`);
+      ui.log(`${ex}`);
+      ui.log(`***`);
+      return;
+    }
+  };
+
+  const createDirectMessage = (profile, msg) => {
+    // check if we have a UI for the DM or create one
+
+    // a DM will look like:
+    // {
+    //   handle: <handle>,
+    //   toCID: <cid>,
+    //   fromCID: <cid>,
+    //   fromHandle: <handle>,
+    //   nonce: <nonce>,
+    //   content: <encrypted data>,
+    //   authorPubKey: <pubKey>,
+    // }
+
+  };
 
   const broadcastProfile = (cid) => {
     let profile = JSON.stringify({
@@ -314,16 +386,9 @@ async function main () {
     }
   }, 7000);
 
-  function invitePeerToPrivateRoom(peerId) {
-    // Invite a peer to a private, encrypted chat
-
-  }
-
   // TODO: add /help function
 
   // TODO: add /peer find <name> / <cid>
-
-  // TODO add /peer chat <name> / <cid>
 
   const whichCommand = (input) => {
     // output.log(`**** INPUT: ${input}`);
@@ -341,10 +406,10 @@ async function main () {
     switch (comm) {
     case '/handle':
       return 'handle';
-      break;
     case '/peer':
       return 'peer';
-      break;
+    case '/e2e':
+      return 'e2e';
     default:
       return null;
     }
@@ -358,6 +423,7 @@ async function main () {
       return;
     }
 
+    // TODO: Do not allow duplicate handles!
     configuration.handle = data[1];
     // output.log(`*** your /handle is now ${data[1]}`);
     input.clearValue();
@@ -391,9 +457,46 @@ async function main () {
     input.clearValue();
   };
 
+  const e2e = (data) => {
+    // get the peer
+    // use room.sendTo(cid, msg) to communicate
+    // use peer CID as chatSession property in order to route DMs to correct e2eUI
+    // `q` closes the chat window
+    data = data.split(" ");
+    if (data.length != 2) {
+      output.log(`*** ERR: invalid input for /e2e: ${data}`);
+      input.clearValue();
+      return;
+    }
+
+    const getProfile = (id) => {
+      let profile;
+      for (let idx in configuration.peerProfiles) {
+        if (idx == id) {
+          return configuration.peerProfiles[idx];
+        }
+        if (idx == configuration.peerProfiles[idx].handle) {
+          return configuration.peerProfiles[idx];
+        }
+        return null;
+      }
+    };
+
+    const profile = getProfile(data[1]);
+    if (!profile) {
+      return output.log(`*** Error; cannot get profile for ${data[1]}`);
+    }
+    const ui = e2eUI(screen);
+    e2eMessages[profile.cid] = {ui: ui};
+    // TODO: make sure ui has reference to input and output
+
+
+  };
+
   const commands = {
     handle: handle,
     peer: peer,
+    e2e: e2e,
   };
 
 }
