@@ -249,9 +249,11 @@ async function main () {
 
   output.log('................... To ....................');
 
-  output.log('................... WUT ...................\n');
+  output.log('................... WUT ...................');
 
-  output.log('\n\n  *** This is the LOBBY. It is *plaintext* group chat ***  \n\n');
+  output.log('\n\n*** This is the LOBBY. It is *plaintext* group chat ***');
+
+  output.log('\n*** Type "/help" for help ***');
 
   // TODO: Display public key as QR CODE
   output.log(`Your NaCl public key is: ${configuration.keyPair.publicKey}\n`);
@@ -407,17 +409,31 @@ async function main () {
     }
 
     let comm = command.substring(0, endChar);
-    // output.log(`comm: ${comm}`);
+
     switch (comm) {
     case '/handle':
       return 'handle';
     case '/peer':
       return 'peer';
-    case '/e2e':
-      return 'e2e';
+    case '/dm':
+      return 'dm';
+    case '/help':
+      return 'help';
     default:
       return null;
     }
+  };
+
+  const HELP_COMMANDS = [
+    { name: '/help', descrption: 'Displays this help data.' },
+    { name: '/handle', descrption: 'Change your handle: "/handle my-new-name"' },
+    { name: '/dm', descrption: 'Start a DM "/dm another-handle"' },
+  ];
+
+  const help = (data) => {
+    HELP_COMMANDS.forEach((cmd) => {
+      output.log(`${cmd.name}: ${cmd.descrption}`);
+    });
   };
 
   const handle = (data, output) => {
@@ -462,7 +478,7 @@ async function main () {
     input.clearValue();
   };
 
-  const e2e = (data) => {
+  const dm = (data) => {
     // get the peer
     // use room.sendTo(cid, msg) to communicate
     // use peer CID as chatSession property in order to route DMs to correct e2eUI
@@ -472,7 +488,7 @@ async function main () {
     }
     data = data.split(" ");
     if (data.length != 2) {
-      output.log(`*** ERR: invalid input for /e2e: ${data}`);
+      output.log(`*** ERR: invalid input for /dm: ${data}`);
       input.clearValue();
       return;
     }
@@ -503,7 +519,8 @@ async function main () {
   const commands = {
     handle: handle,
     peer: peer,
-    e2e: e2e,
+    dm: dm,
+    help: help,
   };
 
 }
