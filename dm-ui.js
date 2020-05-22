@@ -4,7 +4,7 @@ const { logger } = require('./logger');
 
 const { openDirectMessage, createDirectMessage } = require('./messages');
 
-const e2eUI = (parent, profile, configuration, room) => {
+const dmUI = (parent, profile, configuration, room) => {
   if (!parent && !profile && configuration && !room) {
     throw new Error('Parent node, profile, config and room required');
   }
@@ -138,6 +138,8 @@ const e2eUI = (parent, profile, configuration, room) => {
       }
     }
 
+    // TODO: broadcast a message that the DM was closed?
+
     return wrapper.destroy();
   });
 
@@ -150,5 +152,5 @@ const e2eUI = (parent, profile, configuration, room) => {
 };
 
 module.exports = {
-  e2eUI: e2eUI,
+  dmUI: dmUI,
 };

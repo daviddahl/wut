@@ -20,7 +20,7 @@ const {
   decodeBase64
 } = require('tweetnacl-util');
 
-const { e2eUI } = require('./lib/ui');
+const { dmUI } = require('./lib/dm-ui');
 const { openDirectMessage, convertObjectToUint8 } = require('./lib/messages');
 const { logger } = require('./lib/logger');
 
@@ -161,7 +161,7 @@ async function main () {
   });
 
   input = blessed.Textbox({
-    label: ' Enter a message: ',
+    label: ' Command / Broadcast: ',
     parent: screen,
     name: 'main-input',
     top: '90%',
@@ -240,7 +240,6 @@ async function main () {
 
     screen.render();
   });
-
   screen.append(input);
   screen.append(output);
   screen.render();
@@ -316,7 +315,6 @@ async function main () {
       }
     }
 
-
     // Handle peer refresh request
     if (message.data == 'peer-refresh') {
       broadcastProfile(message.from);
@@ -328,14 +326,14 @@ async function main () {
   const handleDirectMessage = (fromCID, msg) => {
     let ui;
 
-    // Check for existing e2eUI
+    // Check for existing dmUI
     try {
       ui = e2eMessages[fromCID].ui;
     } catch (ex) {
       // establish the UI, accept first message
       // TODO: whitelisting of publicKeys
       let profile = configuration.peerProfiles[fromCID];
-      ui = e2eUI(screen, profile, configuration, room);
+      ui = dmUI(screen, profile, configuration, room);
 
       e2eMessages[fromCID] = {ui: ui};
     }
@@ -481,7 +479,7 @@ async function main () {
   const dm = (data) => {
     // get the peer
     // use room.sendTo(cid, msg) to communicate
-    // use peer CID as chatSession property in order to route DMs to correct e2eUI
+    // use peer CID as chatSession property in order to route DMs to correct dmUI
     // `esc` closes the chat window
     if (configuration.handle === configuration.id) {
       return output.log(`*** Please set your handle with "/handle myhandle"`);
@@ -512,7 +510,7 @@ async function main () {
     if (!profile) {
       return output.log(`*** Error: cannot get profile for ${data[1]}`);
     }
-    const ui = e2eUI(screen, profile, configuration, room);
+    const ui = dmUI(screen, profile, configuration, room);
     e2eMessages[profile.id] = {ui: ui};
   };
 
