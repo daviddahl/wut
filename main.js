@@ -217,7 +217,8 @@ async function main () {
         output.log(`WUT: badly formed command: ${msg}`);
         break;
       }
-      room.broadcast(msg);
+      let obj = { content: msg, messageType: BROADCAST_MSG };
+      room.broadcast(JSON.stringify(obj));
       screen.render();
       input.clearValue();
       break;
@@ -284,6 +285,7 @@ async function main () {
 
   const DIRECT_MSG = 'dm';
   const PROFILE_MSG = 'profile';
+  const BROADCAST_MSG = 'brodcast';
 
   room.on('message', (message) => {
     let msg;
@@ -307,6 +309,8 @@ async function main () {
         return output.log(`*** Profile broadcast: ${message.from} is now ${msg.handle}`);
       } else if (msg.messageType == DIRECT_MSG) {
         return handleDirectMessage(message.from, msg);
+      } else if (msg.messageType == BROADCAST_MSG) {
+        return output.log(`*** Broadcast: ${message.from}: ${msg.content}`);
       }
     }
 
@@ -387,18 +391,22 @@ async function main () {
 
   // TODO: add /peer find <name> / <cid>
 
-  const whichCommand = (input) => {
-    // output.log(`**** INPUT: ${input}`);
-    if (!input.startsWith('/')) {
+  const whichCommand = (command) => {
+    // output.log(`**** INPUT: ${command}`);
+    if (!command.startsWith('/')) {
       return null;
     }
 
-    let firstSpace = input.indexOf(' ');
+    let firstSpace = command.indexOf(' ');
+    let endChar;
+
     if (firstSpace == -1) {
-      return null;
+      endChar = command.length - 1;
+    } else {
+      endChar = firstSpace;
     }
 
-    let comm = input.substring(0, firstSpace);
+    let comm = command.substring(0, endChar);
     // output.log(`comm: ${comm}`);
     switch (comm) {
     case '/handle':
