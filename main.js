@@ -21,7 +21,7 @@ const {
 } = require('tweetnacl-util');
 
 const { e2eUI } = require('./lib/ui');
-const { openDirectMessage } = require('./lib/messages');
+const { openDirectMessage, convertKey } = require('./lib/messages');
 const { logger } = require('./lib/logger');
 
 const topic = '__wut__chat__';
@@ -55,14 +55,8 @@ async function main () {
 
   let _keyPair = box.keyPair();
 
-  let pk = new Uint8Array(box.publicKeyLength);
-  for (let idx in _keyPair.publicKey) {
-    pk[idx] = _keyPair.publicKey[idx];
-  }
-  let sk = new Uint8Array(box.secretKeyLength);
-  for (let idx in _keyPair.secretKey) {
-    sk[idx] = _keyPair.secretKey[idx];
-  }
+  let pk = convertKey(_keyPair.publicKey);
+  let sk = convertKey(_keyPair.secretKey);
 
   configuration.keyPair = { publicKey: pk, secretKey: sk };
 
@@ -72,6 +66,8 @@ async function main () {
   const node = await IPFS.create();
   const version = await node.version();
   const nodeId = await node.id();
+  logger.info(nodeId);
+  logger.info(Object.keys(nodeId));
   const room = new Room(node, topic);
 
   const screen = blessed.screen({
@@ -265,6 +261,8 @@ async function main () {
   output.log('IPFS Version:', version.version);
   output.log('IPFS Node Id:', nodeId.id);
 
+  configuration.handle = nodeId.id;
+
   room.on('subscribed', () => {
     output.log(`Now connected to room: ${topic}`);
   });
@@ -299,7 +297,7 @@ async function main () {
             id: message.from,
             handle: msg.handle.trim(),
             bio: msg.bio,
-            publicKey: msg.publicKey,
+            publicKey: convertKey(msg.publicKey),
           };
           return output.log(`*** Profile broadcast: ${message.from} is now ${msg.handle}`);
         } else if (msg.messageType == DIRECT_MSG) {
@@ -461,7 +459,6 @@ async function main () {
     }
 
     const getProfile = (id) => {
-      let profile;
       output.log(`getProfile(${id})`);
       output.log(JSON.stringify(configuration.peerProfiles));
       for (let idx in configuration.peerProfiles) {
@@ -472,8 +469,8 @@ async function main () {
         if (id == configuration.peerProfiles[idx].handle) {
           return configuration.peerProfiles[idx];
         }
-        return null;
       }
+      return null;
     };
 
     const profile = getProfile(data[1].trim()); // TODO: trim all data submitted via the input!
