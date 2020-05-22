@@ -282,8 +282,13 @@ async function main () {
   const PROFILE_MSG = 'profile';
 
   room.on('message', (message) => {
+    let msg;
 
-    let msg = JSON.parse(message.data); // a2c??? UTF8Encode
+    try {
+      msg = JSON.parse(message.data); // a2c??? UTF8Encode
+    } catch (ex) {
+      return output.log(`Error: Cannot parse badly-formed command.`);
+    }
 
     if (msg.messageType) {
       if (msg.messageType == PROFILE_MSG) {
