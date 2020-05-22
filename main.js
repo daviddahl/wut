@@ -92,7 +92,7 @@ async function main () {
   output.log('\n...........................................');
   output.log('................... Welcome ...............');
   output.log('................... To ....................');
-  output.log('................... WUT ...................');
+  output.log('.................. ¿WUT? ..................');
   output.log('...........................................\n');
   output.log('\n\n*** This is the LOBBY. It is *plaintext* group chat ***');
   output.log('\n*** Type "/help" for help ***\n');
