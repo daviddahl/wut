@@ -9,10 +9,11 @@ IPFS-based chat
 * [x] Serverless 'lobby' chat multiple participants
 * [x] Serverless E2E encrypted chat for 2 participants (at first)
 * [x] As nerdy as possbile, hence the `ncurses` style
-* [] Keybase-style UI layout
-* [] Encrypted file sharing via tweetnacl-js & IPFS file storage
-* [] Paste screenshots into chat
-* [] Group encrypted chat
+* [ ] Keybase-style UI layout
+* [ ] Encrypted file sharing via tweetnacl-js & IPFS file storage
+* [ ] Paste screenshots into chat
+* [ ] Group encrypted chat
+* [ ] emojis
 
 ## Install
 
