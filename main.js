@@ -21,7 +21,7 @@ const {
 } = require('tweetnacl-util');
 
 const { e2eUI } = require('./lib/ui');
-const { openDirectMessage, convertKey } = require('./lib/messages');
+const { openDirectMessage, convertObjectToUint8 } = require('./lib/messages');
 const { logger } = require('./lib/logger');
 
 const topic = '__wut__chat__';
@@ -55,8 +55,8 @@ async function main () {
 
   let _keyPair = box.keyPair();
 
-  let pk = convertKey(_keyPair.publicKey);
-  let sk = convertKey(_keyPair.secretKey);
+  let pk = convertObjectToUint8(_keyPair.publicKey);
+  let sk = convertObjectToUint8(_keyPair.secretKey);
 
   configuration.keyPair = { publicKey: pk, secretKey: sk };
 
@@ -287,24 +287,26 @@ async function main () {
   const PROFILE_MSG = 'profile';
 
   room.on('message', (message) => {
-    try {
-      let msg = JSON.parse(message.data);
-      if (msg.messageType) {
-        if (msg.messageType == PROFILE_MSG) {
-          // update peerprofile:
-          output.log(`message: profile... ${msg.handle}`);
-          configuration.peerProfiles[message.from] = {
-            id: message.from,
-            handle: msg.handle.trim(),
-            bio: msg.bio,
-            publicKey: convertKey(msg.publicKey),
-          };
-          return output.log(`*** Profile broadcast: ${message.from} is now ${msg.handle}`);
-        } else if (msg.messageType == DIRECT_MSG) {
-          handleDirectMessage(message.from, msg);
-        }
+
+    let msg = JSON.parse(message.data); // a2c??? UTF8Encode
+    logger.info('**** msg: ');
+    logger.info(msg);
+    if (msg.messageType) {
+      if (msg.messageType == PROFILE_MSG) {
+        // update peerprofile:
+        output.log(`message: profile... ${msg.handle}`);
+        configuration.peerProfiles[message.from] = {
+          id: message.from,
+          handle: msg.handle.trim(),
+          bio: msg.bio,
+          publicKey: convertObjectToUint8(msg.publicKey),
+        };
+        return output.log(`*** Profile broadcast: ${message.from} is now ${msg.handle}`);
+      } else if (msg.messageType == DIRECT_MSG) {
+        return handleDirectMessage(message.from, msg);
       }
-    } catch (ex) {}
+    }
+
 
     // Handle peer refresh request
     if (message.data == 'peer-refresh') {
@@ -332,16 +334,20 @@ async function main () {
     // Decrypt `msg.content`,  msg.nonce, msg.authorPubKey, etc
     try {
       let plaintext = openDirectMessage(msg, configuration);
-      ui.output.log(`${msg.handle}: ${plaintext}`);
+      if (plaintext == null) {
+        ui.output.log(`*** WUT: Error: Message is null.`);
+      } else {
+        ui.output.log(`${msg.fromHandle}: ${plaintext}`);
+      }
     } catch (ex) {
       ui.output.log(`***`);
       ui.output.log(`Cannot decrypt messages from ${msg.handle}`);
-      ui.output.log(`${ex}`);
+      // ui.output.log(`${ex} ... \n ${ex.stack}`);
+      logger.error(`${ex} ... \n ${ex.stack}`);
       ui.output.log(`***`);
       return;
     }
   };
-
 
   const broadcastProfile = (cid) => {
     let profile = JSON.stringify({
@@ -480,7 +486,7 @@ async function main () {
     const ui = e2eUI(screen, profile, configuration, room);
     e2eMessages[profile.id] = {ui: ui};
     // UI is created, focus the new input
-    ui.input.focus();
+    // ui.input.focus();
   };
 
   const commands = {
