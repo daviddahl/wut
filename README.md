@@ -1,6 +1,6 @@
 # ¿wut?
 
-IPFS-based chat
+Serverless, IPFS, Tweetnacl-js-based chat application for terminal in an `ncurses` style
 
 ![](img/wut-screen.png)
 
@@ -10,14 +10,16 @@ IPFS-based chat
 * [x] Serverless E2E encrypted chat for 2 participants (at first)
 * [x] As nerdy as possbile, hence the `ncurses` style
 * [ ] Tab-completion of peer names, commands
+* [ ] Tests
 * [ ] DMs List UI
+* [ ] Paste screenshots into chat
 * [ ] Keys / keychain persistence
 * [ ] Key stretching / BIP-39 password for keychain, configuration data.
 * [ ] Keybase-style UI layout
 * [ ] Encrypted file sharing via tweetnacl-js & IPFS file storage
-* [ ] Paste screenshots into chat
+* [ ] SES-based plugins, (See: Secure ECMAScript)
 * [ ] Group encrypted chat
-* [ ] emojis
+* [ ] Emojis
 * [ ] Encrypted message persistence in IPFS / OrbitDB, etc
 
 ## Install
