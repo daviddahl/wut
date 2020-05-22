@@ -60,14 +60,9 @@ async function main () {
 
   configuration.keyPair = { publicKey: pk, secretKey: sk };
 
-  logger.info('configuration.keyPair.publicKey...');
-  logger.info(configuration.keyPair.publicKey instanceof Uint8Array);
-
   const node = await IPFS.create();
   const version = await node.version();
   const nodeId = await node.id();
-  logger.info(nodeId);
-  logger.info(Object.keys(nodeId));
   const room = new Room(node, topic);
 
   const screen = blessed.screen({
@@ -289,8 +284,7 @@ async function main () {
   room.on('message', (message) => {
 
     let msg = JSON.parse(message.data); // a2c??? UTF8Encode
-    logger.info('**** msg: ');
-    logger.info(msg);
+
     if (msg.messageType) {
       if (msg.messageType == PROFILE_MSG) {
         // update peerprofile:
@@ -342,7 +336,6 @@ async function main () {
     } catch (ex) {
       ui.output.log(`***`);
       ui.output.log(`Cannot decrypt messages from ${msg.handle}`);
-      // ui.output.log(`${ex} ... \n ${ex.stack}`);
       logger.error(`${ex} ... \n ${ex.stack}`);
       ui.output.log(`***`);
       return;
@@ -456,7 +449,10 @@ async function main () {
     // get the peer
     // use room.sendTo(cid, msg) to communicate
     // use peer CID as chatSession property in order to route DMs to correct e2eUI
-    // `q` closes the chat window
+    // `esc` closes the chat window
+    if (configuration.handle === configuration.id) {
+      return output.log(`*** Please set your handle with "/handle myhandle"`);
+    }
     data = data.split(" ");
     if (data.length != 2) {
       output.log(`*** ERR: invalid input for /e2e: ${data}`);
@@ -481,12 +477,10 @@ async function main () {
 
     const profile = getProfile(data[1].trim()); // TODO: trim all data submitted via the input!
     if (!profile) {
-      return output.log(`*** Error; cannot get profile for ${data[1]}`);
+      return output.log(`*** Error: cannot get profile for ${data[1]}`);
     }
     const ui = e2eUI(screen, profile, configuration, room);
     e2eMessages[profile.id] = {ui: ui};
-    // UI is created, focus the new input
-    // ui.input.focus();
   };
 
   const commands = {
@@ -497,8 +491,8 @@ async function main () {
 
 }
 
-// process.on('uncaughtException', (error) => {
-//   logger.error(error);
-// });
+process.on('uncaughtException', (error) => {
+  logger.error(error);
+});
 
 main();
