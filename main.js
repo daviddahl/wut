@@ -165,7 +165,7 @@ async function main () {
       // establish the UI, accept first message
       // TODO: whitelisting of publicKeys
       let profile = configuration.peerProfiles[fromCID];
-      ui = dmUI(screen, profile, configuration, network);
+      ui = dmUI(screen, profile, storage, network);
 
       e2eMessages[fromCID] = {ui: ui};
     }
@@ -204,8 +204,8 @@ async function main () {
 
 }
 
-process.on('uncaughtException', (error) => {
-  logger.error(error);
-});
+// process.on('uncaughtException', (error) => {
+//   logger.error(error);
+// });
 
 main();
