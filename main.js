@@ -73,6 +73,7 @@ async function main () {
   const output = mainUI.output;
   const input = mainUI.input;
   const peersList = mainUI.peersList;
+  const screen = mainUI.screen;
 
   // TODO: Display public key as QR CODE
   output.log(`Your NaCl public key is: ${configuration.keyPair.publicKey}\n`);
