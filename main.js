@@ -1,5 +1,5 @@
 /*
-  WUT? : a very simple terminal-based chat application runing on top of IPFS, tweetnacl-js & blessed
+  ¿wut? : a very simple terminal-based chat application runing on top of IPFS, tweetnacl-js & blessed
 
   Author: David Dahl <ddahl@nulltxt.se>
 */
@@ -173,13 +173,13 @@ async function main () {
     try {
       let plaintext = openDirectMessage(msg, configuration);
       if (plaintext == null) {
-        ui.output.log(`*** WUT: Error: Message is null.`);
+        ui.output.log(`*** ${APP_TITLE}: Error: Message is null.`);
       } else {
         ui.output.log(`${msg.fromHandle}: ${plaintext}`);
       }
     } catch (ex) {
       ui.output.log(`***`);
-      ui.output.log(`*** WUT: Cannot decrypt messages from ${msg.handle}`);
+      ui.output.log(`*** ${APP_TITLE}: Cannot decrypt messages from ${msg.handle}`);
       logger.error(`${ex} ... \n ${ex.stack}`);
       ui.output.log(`***`);
       return;
