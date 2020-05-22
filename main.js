@@ -68,7 +68,7 @@ async function main () {
   const screen = blessed.screen({
     smartCSR: true,
     dockBorders: true,
-    height: 20,
+    height: '100%',
   });
 
   const title = 'WUT?';
