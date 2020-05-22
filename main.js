@@ -74,12 +74,6 @@ async function main () {
   const input = mainUI.input;
   const peersList = mainUI.peersList;
 
-  output.log('................... Welcome ...............');
-  output.log('................... To ....................');
-  output.log('................... WUT ...................');
-  output.log('\n\n*** This is the LOBBY. It is *plaintext* group chat ***');
-  output.log('\n*** Type "/help" for help ***');
-
   // TODO: Display public key as QR CODE
   output.log(`Your NaCl public key is: ${configuration.keyPair.publicKey}\n`);
   input.focus();
@@ -90,11 +84,17 @@ async function main () {
 
   configuration.handle = nodeId.id;
 
-  room.on('subscribed', () => {
+  output.log('................... Welcome ...............');
+  output.log('................... To ....................');
+  output.log('................... WUT ...................');
+  output.log('\n\n*** This is the LOBBY. It is *plaintext* group chat ***');
+  output.log('\n*** Type "/help" for help ***');
+
+  network.room.on('subscribed', () => {
     output.log(`Now connected to room: ${DEFAULT_TOPIC}`);
   });
 
-  room.on('peer joined', (peer) => {
+  network.room.on('peer joined', (peer) => {
     output.log(`Peer joined the room: ${peer}`);
     if (peer == nodeId.id) {
       if (!configuration.handle) {
@@ -106,7 +106,7 @@ async function main () {
     }
   });
 
-  room.on('peer left', (peer) => {
+  network.room.on('peer left', (peer) => {
     output.log(`Peer left: ${peer}`);
   });
 
@@ -114,7 +114,7 @@ async function main () {
   const PROFILE_MSG = 'profile';
   const BROADCAST_MSG = 'brodcast';
 
-  room.on('message', (message) => {
+  network.room.on('message', (message) => {
     let msg;
 
     try {
@@ -159,12 +159,11 @@ async function main () {
       // establish the UI, accept first message
       // TODO: whitelisting of publicKeys
       let profile = configuration.peerProfiles[fromCID];
-      ui = dmUI(screen, profile, configuration, room);
+      ui = dmUI(screen, profile, configuration, network);
 
       e2eMessages[fromCID] = {ui: ui};
     }
 
-    // Decrypt `msg.content`,  msg.nonce, msg.authorPubKey, etc
     try {
       let plaintext = openDirectMessage(msg, configuration);
       if (plaintext == null) {
@@ -174,7 +173,7 @@ async function main () {
       }
     } catch (ex) {
       ui.output.log(`***`);
-      ui.output.log(`Cannot decrypt messages from ${msg.handle}`);
+      ui.output.log(`*** WUT: Cannot decrypt messages from ${msg.handle}`);
       logger.error(`${ex} ... \n ${ex.stack}`);
       ui.output.log(`***`);
       return;
