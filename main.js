@@ -23,7 +23,11 @@ const {
   convertObjectToUint8
 } = require('./lib/messages');
 const { logger } = require('./lib/logger');
-const { DEFAULT_TOPIC, APP_TITLE } = require('./lib/config');
+const {
+  DEFAULT_TOPIC,
+  APP_TITLE,
+  PEER_REFRESH_MS
+} = require('./lib/config');
 
 var configuration = {
   handle: null,
@@ -76,7 +80,7 @@ async function main () {
   const screen = mainUI.screen;
 
   // TODO: Display public key as QR CODE
-  output.log(`Your NaCl public key is: ${configuration.keyPair.publicKey}\n`);
+  output.log(`Your NaCl public key is: \n    ${configuration.keyPair.publicKey}\n`);
   input.focus();
 
   output.log('IPFS node is initialized!');
@@ -85,11 +89,13 @@ async function main () {
 
   configuration.handle = nodeId.id;
 
+  output.log('\n...........................................');
   output.log('................... Welcome ...............');
   output.log('................... To ....................');
   output.log('................... WUT ...................');
+  output.log('...........................................\n');
   output.log('\n\n*** This is the LOBBY. It is *plaintext* group chat ***');
-  output.log('\n*** Type "/help" for help ***');
+  output.log('\n*** Type "/help" for help ***\n');
 
   network.room.on('subscribed', () => {
     output.log(`Now connected to room: ${DEFAULT_TOPIC}`);
@@ -127,7 +133,6 @@ async function main () {
     if (msg.messageType) {
       if (msg.messageType == PROFILE_MSG) {
         // update peerprofile:
-        output.log(`message: profile... ${msg.handle}`);
         configuration.peerProfiles[message.from] = {
           id: message.from,
           handle: msg.handle.trim(),
@@ -181,7 +186,6 @@ async function main () {
     }
   };
 
-
   let peers = network.getPeers();
   configuration.peers = [peers];
   if (peers.length) {
@@ -196,7 +200,7 @@ async function main () {
       peersList.setData(configuration.peers);
       screen.render();
     }
-  }, 7000);
+  }, PEER_REFRESH_MS);
 
 }
 
