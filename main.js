@@ -212,7 +212,11 @@ async function main () {
         commands[comm](msg, output);
         return;
       }
-
+      if (msg.indexOf('/') === 0) {
+        // badly formed command here
+        output.log(`WUT: badly formed command: ${msg}`);
+        break;
+      }
       room.broadcast(msg);
       screen.render();
       input.clearValue();
