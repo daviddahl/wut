@@ -20,9 +20,9 @@ const {
   decodeBase64
 } = require('tweetnacl-util');
 
-const { e2eUI } = require('./lib/ui.js');
-const { openDirectMessage } = require('./lib/messages.js');
-const { logger } = require('./lib/logger.js');
+const { e2eUI } = require('./lib/ui');
+const { openDirectMessage } = require('./lib/messages');
+const { logger } = require('./lib/logger');
 
 const topic = '__wut__chat__';
 
@@ -38,7 +38,7 @@ const uiConfiguration = {
   }
 };
 
-const configuration = {
+var configuration = {
   handle: null,
   bio: 'Web 3.0 Enthusiast',
   homepage: 'https://github.com/daviddahl/wut',
@@ -53,7 +53,21 @@ let output,
 
 async function main () {
 
-  configuration.keyPair = box.keyPair();
+  let _keyPair = box.keyPair();
+
+  let pk = new Uint8Array(box.publicKeyLength);
+  for (let idx in _keyPair.publicKey) {
+    pk[idx] = _keyPair.publicKey[idx];
+  }
+  let sk = new Uint8Array(box.secretKeyLength);
+  for (let idx in _keyPair.secretKey) {
+    sk[idx] = _keyPair.secretKey[idx];
+  }
+
+  configuration.keyPair = { publicKey: pk, secretKey: sk };
+
+  logger.info('configuration.keyPair.publicKey...');
+  logger.info(configuration.keyPair.publicKey instanceof Uint8Array);
 
   const node = await IPFS.create();
   const version = await node.version();
@@ -308,7 +322,7 @@ async function main () {
     // Check for existing e2eUI
     try {
       ui = e2eMessages[fromCID].ui;
-    } catch(ex) {
+    } catch (ex) {
       // establish the UI, accept first message
       // TODO: whitelisting of publicKeys
       let profile = configuration.peerProfiles[fromCID];
@@ -466,7 +480,7 @@ async function main () {
     if (!profile) {
       return output.log(`*** Error; cannot get profile for ${data[1]}`);
     }
-    const ui = e2eUI(screen, profile, room);
+    const ui = e2eUI(screen, profile, configuration, room);
     e2eMessages[profile.id] = {ui: ui};
     // UI is created, focus the new input
     ui.input.focus();
@@ -480,8 +494,8 @@ async function main () {
 
 }
 
-process.on('uncaughtException', (error) => {
-  console.log(error);
-});
+// process.on('uncaughtException', (error) => {
+//   logger.error(error);
+// });
 
 main();
