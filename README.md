@@ -10,7 +10,9 @@ Serverless, IPFS, Tweetnacl-js-based chat application for terminal in an `ncurse
 * [x] Serverless E2E encrypted chat for 2 participants (at first)
 * [x] As nerdy as possbile, hence the `ncurses` style
 * [ ] Tab-completion of peer names, commands
+* [ ] Tab / arrows to focus UI elements
 * [ ] Social Proofs, see: https://github.com/IBM/ipfs-social-proof
+* [ ] Child_process for IPFS, workers for crypto? Discuss.
 * [ ] Tests
 * [ ] DMs List UI
 * [ ] Paste screenshots into chat
@@ -21,7 +23,7 @@ Serverless, IPFS, Tweetnacl-js-based chat application for terminal in an `ncurse
 * [ ] SES-based plugins, (See: Secure ECMAScript https://github.com/Agoric/SES-shim )
 * [ ] Group encrypted chat
 * [ ] Emojis
-* [ ] Encrypted message persistence in IPFS / OrbitDB, etc
+* [ ] Encrypted message persistence in IPFS via OrbitDB, js-threads?
 
 ## Install
 
