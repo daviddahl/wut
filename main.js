@@ -100,7 +100,7 @@ async function main () {
         connEncryption: [ SECIO ],
         peerDiscovery: [Bootstrap],
         // we add the Pubsub module we want
-        pubsub: Gossipsub
+        // pubsub: Gossipsub
       },
       config: {
         peerDiscovery: {
