@@ -8,6 +8,9 @@
 
 const IPFS = require('ipfs');
 const Room = require('ipfs-pubsub-room');
+// const wrtc = require('wrtc');
+// const WStar = require('libp2p-webrtc-star');
+// const wstar = new WStar({ wrtc });
 
 const all = require('it-all');
 
@@ -26,7 +29,8 @@ const { logger } = require('./lib/logger');
 const {
   DEFAULT_TOPIC,
   APP_TITLE,
-  PEER_REFRESH_MS
+  PEER_REFRESH_MS,
+  HOME_DIR,
 } = require('./lib/config');
 
 var configuration = {
@@ -60,6 +64,7 @@ const storage = {
 
 async function main () {
 
+  let ipfsRepoPath = `${HOME_DIR}/.jsipfs`;
   // create and expose main UI
   let _keyPair = box.keyPair();
   let pk = convertObjectToUint8(_keyPair.publicKey);
@@ -67,7 +72,28 @@ async function main () {
 
   configuration.keyPair = { publicKey: pk, secretKey: sk };
 
-  const node = await IPFS.create();
+  const node = await IPFS.create({
+    repo: ipfsRepoPath,
+    EXPERIMENTAL: {
+      pubsub: true
+    },
+    // start: false,
+    config: {
+      Addresses: {
+        Swarm: [
+          "/ip4/0.0.0.0/tcp/4002",
+          "/ip4/127.0.0.1/tcp/4003/ws",
+          "/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star"
+        ]
+      }
+    },
+    // libp2p: {
+    //   modules: {
+    //     transport: [wstar],
+    //     peerDiscovery: [wstar.discovery]
+    //   }
+    // }
+  });
   const version = await node.version();
   const nodeId = await node.id();
   const room = new Room(node, DEFAULT_TOPIC);
