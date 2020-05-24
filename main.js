@@ -84,15 +84,34 @@ async function main () {
   const Mplex = require('libp2p-mplex');
   const SECIO = require('libp2p-secio');
   const PeerInfo = require('peer-info');
+  const WebSockets = require('libp2p-websockets');
+  const Bootstrap = require('libp2p-bootstrap');
+
+  const bootstrapMultiaddrs = [
+    '/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/p2p/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
+    '/dns4/lon-1.bootstrap.libp2p.io/tcp/443/wss/p2p/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3'
+  ];
 
   const room2 = async () => {
     const node = await Libp2p.create({
       modules: {
-        transport: [ TCP ],
+        transport: [ TCP, WebSockets ],
         streamMuxer: [ Mplex ],
         connEncryption: [ SECIO ],
+        peerDiscovery: [Bootstrap],
         // we add the Pubsub module we want
         pubsub: Gossipsub
+      },
+      config: {
+        peerDiscovery: {
+          autoDial: true, // Auto connect to discovered peers (limited by ConnectionManager minPeers)
+          // The `tag` property will be searched when creating the instance of your Peer Discovery service.
+          // The associated object, will be passed to the service when it is instantiated.
+          [Bootstrap.tag]: {
+            enabled: true,
+            list: bootstrapMultiaddrs // provide array of multiaddrs
+          }
+        }
       }
     });
 
@@ -126,6 +145,14 @@ async function main () {
   output.log('...........................................\n');
   output.log('\n\n*** This is the LOBBY. It is *plaintext* group chat ***');
   output.log('\n*** Type "/help" for help ***\n');
+
+  network.pubsubEmitter.on('subscribed', () => {
+    output.log(arguments);
+  });
+
+  network.pubsubEmitter.on('message', () => {
+    output.log(arguments);
+  });
 
   network.room.on('subscribed', () => {
     output.log(`Now connected to room: ${DEFAULT_TOPIC}`);
