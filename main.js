@@ -64,7 +64,7 @@ const storage = {
 
 async function main () {
 
-  let ipfsRepoPath = `${HOME_DIR}/.jsipfs`;
+  let ipfsRepoPath = `${HOME_DIR}/`;
   // create and expose main UI
   let _keyPair = box.keyPair();
   let pk = convertObjectToUint8(_keyPair.publicKey);
@@ -72,32 +72,36 @@ async function main () {
 
   configuration.keyPair = { publicKey: pk, secretKey: sk };
 
-  const node = await IPFS.create({
-    repo: ipfsRepoPath,
-    EXPERIMENTAL: {
-      pubsub: true
-    },
-    // start: false,
-    config: {
-      Addresses: {
-        Swarm: [
-          "/ip4/0.0.0.0/tcp/4002",
-          "/ip4/127.0.0.1/tcp/4003/ws",
-          "/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star"
-        ]
-      }
-    },
-    // libp2p: {
-    //   modules: {
-    //     transport: [wstar],
-    //     peerDiscovery: [wstar.discovery]
-    //   }
-    // }
-  });
+  const node = await IPFS.create();
   const version = await node.version();
   const nodeId = await node.id();
   const room = new Room(node, DEFAULT_TOPIC);
-  const network = new Network(configuration, nodeId, room);
+
+  const Libp2p = require('libp2p');
+  const Gossipsub = require('libp2p-gossipsub');
+  const { Buffer } = require('buffer');
+  const TCP = require('libp2p-tcp');
+  const Mplex = require('libp2p-mplex');
+  const SECIO = require('libp2p-secio');
+  const PeerInfo = require('peer-info');
+
+  const room2 = async () => {
+    const node = await Libp2p.create({
+      modules: {
+        transport: [ TCP ],
+        streamMuxer: [ Mplex ],
+        connEncryption: [ SECIO ],
+        // we add the Pubsub module we want
+        pubsub: Gossipsub
+      }
+    });
+
+    await node.start();
+
+    return node;
+  };
+
+  const network = new Network(configuration, nodeId, room, room2);
   const mainUI = MainUI(configuration, storage, network);
 
   const output = mainUI.output;
