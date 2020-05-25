@@ -8,9 +8,10 @@
 
 const IPFS = require('ipfs');
 const Room = require('ipfs-pubsub-room');
-// const wrtc = require('wrtc');
-// const WStar = require('libp2p-webrtc-star');
-// const wstar = new WStar({ wrtc });
+
+const wrtc = require('wrtc'); // or require('electron-webrtc')()
+const WStar = require('libp2p-webrtc-star');
+const TCP = require('libp2p-tcp');
 
 const all = require('it-all');
 
@@ -72,55 +73,74 @@ async function main () {
 
   configuration.keyPair = { publicKey: pk, secretKey: sk };
 
-  const node = await IPFS.create();
+  const upgrader = {
+    upgradeInbound: maConn => maConn,
+    upgradeOutbound: maConn => maConn
+  };
+
+  // const tcp = new TCP({ upgrader });
+  // const wstar = new WStar({ wrtc, upgrader });
+
+  const node = await IPFS.create({
+    // start: false,
+    config: {
+      Addresses: {
+        Swarm: [
+          '/ip4/127.0.0.1/tcp/9090/wss', // <-- use the websocket transport
+          '/ip4/127.0.0.1/tcp/9091'      // <-- use the tcp transport
+        ]
+      },
+      // Addresses: {
+      //   Swarm: [
+      //     "/ip4/0.0.0.0/tcp/4002",
+      //     "/ip4/127.0.0.1/tcp/4003/ws",
+      //     "/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star"
+      //   ]
+      // },
+      // Bootstrap: [
+      //   '/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/p2p/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
+      //   '/dns4/lon-1.bootstrap.libp2p.io/tcp/443/wss/p2p/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3',
+      // ]
+    },
+    // libp2p: {
+    //   modules: {
+    //     transport: [wstar],
+    //     peerDiscovery: [wstar.discovery]
+    //   }
+    // }
+  });
+
+
+//  const node = await IPFS.create(
+    // {
+    // EXPERIMENTAL: {
+    //   pubsub: true
+    // },
+    // config: {
+    //   Addresses: {
+    //     Swarm: [
+    //       '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
+    //     ]
+    //   },
+    //   Bootstrap: [
+    //     '/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
+    //     '/dns4/lon-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3',
+    //     '/dns4/sfo-3.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
+    //     '/dns4/sgp-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu',
+    //     '/dns4/nyc-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLueR4xBeUbY9WZ9xGUUxunbKWcrNFTDAadQJmocnWm',
+    //     '/dns4/nyc-2.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLV4Bbm51jM9C4gDYZQ9Cy3U6aXMJDAbzgu2fzaDs64',
+    //     '/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
+    //     '/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
+    //   ]
+    // }}
+  //);
   const version = await node.version();
   const nodeId = await node.id();
   const room = new Room(node, DEFAULT_TOPIC);
 
-  const Libp2p = require('libp2p');
-  const Gossipsub = require('libp2p-gossipsub');
-  const { Buffer } = require('buffer');
-  const TCP = require('libp2p-tcp');
-  const Mplex = require('libp2p-mplex');
-  const SECIO = require('libp2p-secio');
-  const PeerInfo = require('peer-info');
-  const WebSockets = require('libp2p-websockets');
-  const Bootstrap = require('libp2p-bootstrap');
+  const network = new Network(configuration, nodeId, room);
+  // network.initPubsub();
 
-  const bootstrapMultiaddrs = [
-    '/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/p2p/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
-    '/dns4/lon-1.bootstrap.libp2p.io/tcp/443/wss/p2p/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3'
-  ];
-
-  const room2 = async () => {
-    const node = await Libp2p.create({
-      modules: {
-        transport: [ TCP, WebSockets ],
-        streamMuxer: [ Mplex ],
-        connEncryption: [ SECIO ],
-        peerDiscovery: [Bootstrap],
-        // we add the Pubsub module we want
-        // pubsub: Gossipsub
-      },
-      config: {
-        peerDiscovery: {
-          autoDial: true, // Auto connect to discovered peers (limited by ConnectionManager minPeers)
-          // The `tag` property will be searched when creating the instance of your Peer Discovery service.
-          // The associated object, will be passed to the service when it is instantiated.
-          [Bootstrap.tag]: {
-            enabled: true,
-            list: bootstrapMultiaddrs // provide array of multiaddrs
-          }
-        }
-      }
-    });
-
-    await node.start();
-
-    return node;
-  };
-
-  const network = new Network(configuration, nodeId, room, room2);
   const mainUI = MainUI(configuration, storage, network);
 
   const output = mainUI.output;
@@ -146,13 +166,13 @@ async function main () {
   output.log('\n\n*** This is the LOBBY. It is *plaintext* group chat ***');
   output.log('\n*** Type "/help" for help ***\n');
 
-  network.pubsubEmitter.on('subscribed', () => {
-    output.log(arguments);
-  });
+  // network.pubsubEmitter.on('subscribed', () => {
+  //   output.log(arguments);
+  // });
 
-  network.pubsubEmitter.on('message', () => {
-    output.log(arguments);
-  });
+  // network.pubsubEmitter.on('message', () => {
+  //   output.log(arguments);
+  // });
 
   network.room.on('subscribed', () => {
     output.log(`Now connected to room: ${DEFAULT_TOPIC}`);
