@@ -83,6 +83,9 @@ async function main () {
 
   const node = await IPFS.create({
     // start: false,
+    EXPERIMENTAL: {
+      pubsub: true
+    },
     config: {
       Addresses: {
         Swarm: [
