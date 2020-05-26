@@ -64,6 +64,13 @@ const DEFAULT_CONFIG = {
       Router: 'floodsub',
       enabled: true,
     },
+    dht: {
+      kBucketSize: 20,
+      enabled: true,
+      randomWalk: {
+        enabled: true
+      },
+    },
     modules: {
       // transport: [wstar],
       // peerDiscovery: [wstar.discovery]
