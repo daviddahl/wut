@@ -1,3 +1,7 @@
+// const wrtc = require('wrtc');
+// const WStar = require('libp2p-webrtc-star');
+// const wstar = new WStar({ wrtc });
+
 const bootstrap = [
   '/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z',
   '/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
@@ -34,8 +38,28 @@ const DEFAULT_CONFIG = {
       '/dns4/node2.preload.ipfs.io/https',
       '/dns4/node3.preload.ipfs.io/https'
     ]
+  },
+  config: {
+    Addresses: {
+      Swarm: [
+        "/ip4/0.0.0.0/tcp/4002",
+        "/ip4/127.0.0.1/tcp/4003/ws",
+        "/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star"
+      ]
+    }
+  },
+  libp2p: {
+    pubsub: {
+      Router: 'floodsub',
+      enabled: true,
+    },
+    modules: {
+      // transport: [wstar],
+      // peerDiscovery: [wstar.discovery]
+    }
   }
 };
+
 
 // const DEFAULT_CONFIG = {
 //   // See: https://github.com/alanshaw/js-ipfs-preload-tester
