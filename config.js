@@ -39,6 +39,7 @@ const DEFAULT_CONFIG = {
       },
     },
   },
+  bootstrap: bootstrap,
   preload: {
     enabled: true,
     addresses: [
@@ -49,6 +50,7 @@ const DEFAULT_CONFIG = {
     ]
   },
   config: {
+    bootstrap: bootstrap,
     Addresses: {
       Swarm: [
         "/ip4/0.0.0.0/tcp/4002",
