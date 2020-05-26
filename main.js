@@ -22,10 +22,8 @@ const { box } = require('tweetnacl');
 const { dmUI } = require('./lib/dm-ui');
 const { MainUI } = require('./lib/main-ui');
 const { Network } = require('./lib/network');
-const {
-  openDirectMessage,
-  convertObjectToUint8
-} = require('./lib/messages');
+const { openDirectMessage } = require('./lib/messages');
+const { convertObjectToUint8 } = require('./lib/keys');
 const { logger } = require('./lib/logger');
 const {
   DEFAULT_TOPIC,
