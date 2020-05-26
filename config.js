@@ -29,7 +29,16 @@ const bootstrap = [
 const DEFAULT_CONFIG = {
   init: true,
   start: true,
-  EXPERIMENTAL: { pubsub: true },
+  EXPERIMENTAL: {
+    pubsub: true,
+    dht: true,
+    relay: {
+      enabled: true,
+      hop: {
+        enabled: true
+      },
+    },
+  },
   preload: {
     enabled: true,
     addresses: [

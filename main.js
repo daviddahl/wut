@@ -73,22 +73,17 @@ async function main () {
 
   configuration.keyPair = { publicKey: pk, secretKey: sk };
 
-  // const upgrader = {
-  //   upgradeInbound: maConn => maConn,
-  //   upgradeOutbound: maConn => maConn
-  // };
-
-  // const tcp = new TCP({ upgrader });
-  // const wstar = new WStar({ wrtc, upgrader });
-
   const node = await IPFS.create(nodeConfig);
+
+  // node.on('error', (err) => {
+  //   logger.error(err);
+  // });
 
   const version = await node.version();
   const nodeId = await node.id();
   const room = new Room(node, DEFAULT_TOPIC);
 
   const network = new Network(configuration, nodeId, room);
-  // network.initPubsub();
 
   const mainUI = MainUI(configuration, storage, network);
 
