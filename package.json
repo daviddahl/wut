@@ -22,7 +22,9 @@
     "tweetnacl": "",
     "tweetnacl-util": "",
     "uuid": "^8.1.0",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "wrtc": "*",
+    "libp2p-webrtc-star": "*"
   },
   "devDependencies": {}
 }
