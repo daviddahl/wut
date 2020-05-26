@@ -51,6 +51,7 @@ const DEFAULT_CONFIG = {
         '/dns4/node3.preload.ipfs.io/tcp/443/wss',
       ]
     },
+    Bootstrap: bootstrap,
   },
   Discovery: {
     MDNS: {
@@ -61,7 +62,7 @@ const DEFAULT_CONFIG = {
       Enabled: true
     }
   },
-  Bootstrap: bootstrap,
+  // Bootstrap: bootstrap,
   Pubsub: {
     Router: 'gossipsub',
     Enabled: true
