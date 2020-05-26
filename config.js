@@ -24,6 +24,9 @@ const bootstrap = [
 
 const DEFAULT_CONFIG = {
   // See: https://github.com/alanshaw/js-ipfs-preload-tester
+  init: true,
+  start: true,
+  EXPERIMENTAL: { pubsub: true },
   preload: {
     enabled: true,
     addresses: [
@@ -34,21 +37,20 @@ const DEFAULT_CONFIG = {
     ],
   },
   config: {
-    Bootstrap: bootstrap,
-  },
-  Addresses: {
-    Swarm: [
-      '/ip4/0.0.0.0/tcp/4002',
-      '/ip4/127.0.0.1/tcp/4003/ws'
-    ],
-    API: '/ip4/127.0.0.1/tcp/5002',
-    Gateway: '/ip4/127.0.0.1/tcp/9090',
-    Delegates: [
-      '/dns4/node0.preload.ipfs.io/tcp/443/wss',
-      '/dns4/node1.preload.ipfs.io/tcp/443/wss',
-      '/dns4/node2.preload.ipfs.io/tcp/443/wss',
-      '/dns4/node3.preload.ipfs.io/tcp/443/wss',
-    ]
+    Addresses: {
+      Swarm: [
+        '/ip4/0.0.0.0/tcp/4002',
+        '/ip4/127.0.0.1/tcp/4003/ws'
+      ],
+      API: '/ip4/127.0.0.1/tcp/5002',
+      Gateway: '/ip4/127.0.0.1/tcp/9090',
+      Delegates: [
+        '/dns4/node0.preload.ipfs.io/tcp/443/wss',
+        '/dns4/node1.preload.ipfs.io/tcp/443/wss',
+        '/dns4/node2.preload.ipfs.io/tcp/443/wss',
+        '/dns4/node3.preload.ipfs.io/tcp/443/wss',
+      ]
+    },
   },
   Discovery: {
     MDNS: {
