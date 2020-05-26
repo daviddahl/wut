@@ -73,10 +73,10 @@ async function main () {
 
   configuration.keyPair = { publicKey: pk, secretKey: sk };
 
-  const upgrader = {
-    upgradeInbound: maConn => maConn,
-    upgradeOutbound: maConn => maConn
-  };
+  // const upgrader = {
+  //   upgradeInbound: maConn => maConn,
+  //   upgradeOutbound: maConn => maConn
+  // };
 
   // const tcp = new TCP({ upgrader });
   // const wstar = new WStar({ wrtc, upgrader });

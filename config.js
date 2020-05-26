@@ -1,23 +1,4 @@
-const DEFAULT_CONFIG = {
-  Addresses: {
-    Swarm: [
-      '/ip4/0.0.0.0/tcp/4002',
-      '/ip4/127.0.0.1/tcp/4003/ws'
-    ],
-    API: '/ip4/127.0.0.1/tcp/5002',
-    Gateway: '/ip4/127.0.0.1/tcp/9090',
-    Delegates: []
-  },
-  Discovery: {
-    MDNS: {
-      Enabled: true,
-      Interval: 10
-    },
-    webRTCStar: {
-      Enabled: true
-    }
-  },
-  Bootstrap: [
+const bootstrap = [
     '/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z',
     '/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
     '/ip4/104.236.179.241/tcp/4001/p2p/QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
@@ -39,7 +20,41 @@ const DEFAULT_CONFIG = {
     '/dns4/node1.preload.ipfs.io/tcp/443/wss/p2p/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6',
     '/dns4/node2.preload.ipfs.io/tcp/443/wss/p2p/QmV7gnbW5VTcJ3oyM2Xk1rdFBJ3kTkvxc87UFGsun29STS',
     '/dns4/node3.preload.ipfs.io/tcp/443/wss/p2p/QmY7JB6MQXhxHvq7dBDh4HpbH29v4yE9JRadAVpndvzySN'
-  ],
+];
+
+const DEFAULT_CONFIG = {
+  // See: https://github.com/alanshaw/js-ipfs-preload-tester
+  preload: {
+    enabled: true,
+    addresses: [
+      '/dns4/node0.preload.ipfs.io/https',
+      '/dns4/node1.preload.ipfs.io/https',
+      '/dns4/node2.preload.ipfs.io/https',
+      '/dns4/node3.preload.ipfs.io/https',
+    ],
+  },
+  config: {
+    Bootstrap: bootstrap,
+  },
+  Addresses: {
+    Swarm: [
+      '/ip4/0.0.0.0/tcp/4002',
+      '/ip4/127.0.0.1/tcp/4003/ws'
+    ],
+    API: '/ip4/127.0.0.1/tcp/5002',
+    Gateway: '/ip4/127.0.0.1/tcp/9090',
+    Delegates: []
+  },
+  Discovery: {
+    MDNS: {
+      Enabled: true,
+      Interval: 10
+    },
+    webRTCStar: {
+      Enabled: true
+    }
+  },
+  Bootstrap: bootstrap,
   Pubsub: {
     Router: 'gossipsub',
     Enabled: true
