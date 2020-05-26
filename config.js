@@ -23,7 +23,6 @@ const bootstrap = [
 ];
 
 const DEFAULT_CONFIG = {
-  // See: https://github.com/alanshaw/js-ipfs-preload-tester
   init: true,
   start: true,
   EXPERIMENTAL: { pubsub: true },
@@ -33,47 +32,61 @@ const DEFAULT_CONFIG = {
       '/dns4/node0.preload.ipfs.io/https',
       '/dns4/node1.preload.ipfs.io/https',
       '/dns4/node2.preload.ipfs.io/https',
-      '/dns4/node3.preload.ipfs.io/https',
-    ],
-  },
-  config: {
-    Addresses: {
-      Swarm: [
-        '/ip4/0.0.0.0/tcp/4002',
-        '/ip4/127.0.0.1/tcp/4003/ws'
-      ],
-      API: '/ip4/127.0.0.1/tcp/5002',
-      Gateway: '/ip4/127.0.0.1/tcp/9090',
-      Delegates: [
-        '/dns4/node0.preload.ipfs.io/tcp/443/wss',
-        '/dns4/node1.preload.ipfs.io/tcp/443/wss',
-        '/dns4/node2.preload.ipfs.io/tcp/443/wss',
-        '/dns4/node3.preload.ipfs.io/tcp/443/wss',
-      ]
-    },
-    Bootstrap: bootstrap,
-  },
-  Discovery: {
-    MDNS: {
-      Enabled: true,
-      Interval: 10
-    },
-    webRTCStar: {
-      Enabled: true
-    }
-  },
-  // Bootstrap: bootstrap,
-  Pubsub: {
-    Router: 'gossipsub',
-    Enabled: true
-  },
-  Swarm: {
-    ConnMgr: {
-      LowWater: 200,
-      HighWater: 500
-    }
+      '/dns4/node3.preload.ipfs.io/https'
+    ]
   }
 };
+
+// const DEFAULT_CONFIG = {
+//   // See: https://github.com/alanshaw/js-ipfs-preload-tester
+//   init: true,
+//   start: true,
+//   EXPERIMENTAL: { pubsub: true },
+//   preload: {
+//     enabled: true,
+//     addresses: [
+//       '/dns4/node0.preload.ipfs.io/https',
+//       '/dns4/node1.preload.ipfs.io/https',
+//       '/dns4/node2.preload.ipfs.io/https',
+//       '/dns4/node3.preload.ipfs.io/https',
+//     ],
+//   },
+//   config: {
+//     addresses: {
+//       swarm: [
+//         '/ip4/0.0.0.0/tcp/4002',
+//         '/ip4/127.0.0.1/tcp/4003/ws'
+//       ],
+//       api: '/ip4/127.0.0.1/tcp/5002',
+//       gateway: '/ip4/127.0.0.1/tcp/9090',
+//       delegates: [
+//         '/dns4/node0.preload.ipfs.io/tcp/443/wss',
+//         '/dns4/node1.preload.ipfs.io/tcp/443/wss',
+//         '/dns4/node2.preload.ipfs.io/tcp/443/wss',
+//         '/dns4/node3.preload.ipfs.io/tcp/443/wss',
+//       ]
+//     },
+//     bootstrap: bootstrap,
+//     peerDiscovery: {
+//       mdns: {
+//         Enabled: true,
+//         Interval: 10
+//       },
+//       webRTCStar: {
+//         Enabled: true
+//       }
+//     },
+//     bootstrap: bootstrap,
+//     pubsub: {
+//       Router: 'gossipsub',
+//       enabled: true
+//     },
+//   },
+//   connectionManager: {
+//     minConnections: 200,
+//     maxConnections: 500
+//   }
+// };
 
 module.exports = {
   nodeConfig: DEFAULT_CONFIG
