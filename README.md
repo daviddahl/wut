@@ -6,6 +6,7 @@ Serverless, IPFS, Tweetnacl-js-based chat application for terminal in an `ncurse
 
 ## Goals
 
+* [ ] `Major issue`: Make pubsub work outside local networks
 * [x] Serverless 'lobby' chat multiple participants
 * [x] Serverless E2E encrypted chat for 2 participants (at first)
 * [x] As nerdy as possbile, hence the `ncurses` style
