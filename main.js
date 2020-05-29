@@ -99,6 +99,9 @@ async function main () {
   const webrtcServerMultiAddr3 = `/ip4/${signalServerIP()}/tcp/13579/ipfs/${nodeId}` // default port
   const webrtcServerMultiAddr4 = `/ip4/${signalServerIP()}/tcp/9090/ipfs/${nodeId}`
 
+  const webrtcAddr = "/ip4/0.0.0.0/tcp/13579/ws/p2p-webrtc-star"
+
+  p2p.peerInfo.multiaddrs.add(webrtcAddr)
   p2p.peerInfo.multiaddrs.add(ssAddr)
   p2p.peerInfo.multiaddrs.add(p2pServerMultiAddress)
   p2p.peerInfo.multiaddrs.add(webrtcServerMultiAddr)
