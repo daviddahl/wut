@@ -45,7 +45,6 @@ const bootstrapSignalingServerMultiAddr =
 
 const bootstrappers = [
   ssAddr,
-
   '/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
   '/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z',
   '/ip4/104.236.179.241/tcp/4001/p2p/QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
@@ -90,6 +89,9 @@ const libp2pBundle = async (opts) => {
         enabled: true
       },
       peerDiscovery: {
+        webRTCStar: {
+          enabled: true
+        },
         bootstrap: {
           interval: 60e3,
           enabled: true,
