@@ -85,6 +85,11 @@ const libp2pBundle = async (opts) => {
       dht: DHT,
     },
     config: {
+      addresses: {
+        swarm: [
+          ssAddr,
+        ],
+      },
       dht: {                        // The DHT options (and defaults) can be found in its documentation
         kBucketSize: 20,
         enabled: true,

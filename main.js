@@ -96,11 +96,13 @@ async function main () {
   const p2pServerMultiAddress = `/dns4/${signalServerIP()}/wss/p2p-webrtc-star/p2p/${nodeId}`
   const webrtcServerMultiAddr = `/ip4/${signalServerIP()}/tcp/63785/ipfs/${nodeId}`
   const webrtcServerMultiAddr2 = `/ip4/${signalServerIP()}/tcp/15555/ipfs/${nodeId}`
+  const webrtcServerMultiAddr3 = `/ip4/${signalServerIP()}/tcp/13579/ipfs/${nodeId}` // default port
 
   p2p.peerInfo.multiaddrs.add(ssAddr)
   p2p.peerInfo.multiaddrs.add(p2pServerMultiAddress)
   p2p.peerInfo.multiaddrs.add(webrtcServerMultiAddr)
   p2p.peerInfo.multiaddrs.add(webrtcServerMultiAddr2)
+  p2p.peerInfo.multiaddrs.add(webrtcServerMultiAddr3)
 
   const room = new Room(p2p, DEFAULT_TOPIC);
 
