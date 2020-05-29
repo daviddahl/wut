@@ -93,6 +93,7 @@ async function main () {
 
   p2p.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/63785')
   p2p.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/63786/ws')
+
   const p2pServerMultiAddress = `/dns4/${signalServerIP()}/wss/p2p-webrtc-star/p2p/${nodeId}`
   const webrtcServerMultiAddr = `/ip4/${signalServerIP()}/tcp/63785/ipfs/${nodeId}`
   const webrtcServerMultiAddr2 = `/ip4/${signalServerIP()}/tcp/15555/ipfs/${nodeId}`
@@ -100,8 +101,13 @@ async function main () {
   const webrtcServerMultiAddr4 = `/ip4/${signalServerIP()}/tcp/9090/ipfs/${nodeId}`
 
   const webrtcAddr = "/ip4/0.0.0.0/tcp/13579/ws/p2p-webrtc-star"
+  const webrtcAddr2 = "/ip4/0.0.0.0/tcp/63785/tcp/p2p-webrtc-star"
+  const webrtcAddr3 = "/ip4/0.0.0.0/tcp/63786/ws/p2p-webrtc-star"
 
   p2p.peerInfo.multiaddrs.add(webrtcAddr)
+  p2p.peerInfo.multiaddrs.add(webrtcAddr2)
+  p2p.peerInfo.multiaddrs.add(webrtcAddr3)
+
   p2p.peerInfo.multiaddrs.add(ssAddr)
   p2p.peerInfo.multiaddrs.add(p2pServerMultiAddress)
   p2p.peerInfo.multiaddrs.add(webrtcServerMultiAddr)
