@@ -40,6 +40,7 @@ const bootstrapSignalingServerMultiAddr =
       `/ip4/${signalServerIP()}/tcp/63785/ipfs/${signalServerCID()}`;
 
 const bootstrappers = [
+  bootstrapSignalingServerMultiAddr,
   '/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
   '/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z',
   '/ip4/104.236.179.241/tcp/4001/p2p/QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
