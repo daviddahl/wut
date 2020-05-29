@@ -12,6 +12,7 @@ const Room = require('ipfs-pubsub-room');
 const wrtc = require('wrtc'); // or require('electron-webrtc')()
 const WStar = require('libp2p-webrtc-star');
 const TCP = require('libp2p-tcp');
+const { Upgrader } = require('libp2p/upgrader');
 
 const all = require('it-all');
 
@@ -75,10 +76,6 @@ async function main () {
 
   const node = await IPFS.create(nodeConfig);
 
-  // node.on('error', (err) => {
-  //   logger.error(err);
-  // });
-
   const version = await node.version();
   const nodeId = await node.id();
   const room = new Room(node, DEFAULT_TOPIC);
@@ -109,14 +106,6 @@ async function main () {
   output.log('...........................................\n');
   output.log('\n\n*** This is the LOBBY. It is *plaintext* group chat ***');
   output.log('\n*** Type "/help" for help ***\n');
-
-  // network.pubsubEmitter.on('subscribed', () => {
-  //   output.log(arguments);
-  // });
-
-  // network.pubsubEmitter.on('message', () => {
-  //   output.log(arguments);
-  // });
 
   network.room.on('subscribed', () => {
     output.log(`Now connected to room: ${DEFAULT_TOPIC}`);
