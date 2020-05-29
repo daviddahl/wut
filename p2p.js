@@ -1,3 +1,5 @@
+const TCP = require('libp2p-tcp');
+const Websockets = require('libp2p-websockets');
 const PeerInfo = require('peer-info')
 const Libp2p = require('libp2p')
 const WebRTCStar = require('libp2p-webrtc-star')
@@ -5,6 +7,8 @@ const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
 const wrtc = require('wrtc')
 const GossipSub = require('libp2p-gossipsub')
+const MulticastDNS = require('libp2p-mdns')
+const Bootstrap = require('libp2p-bootstrap')
 
 const transportKey = WebRTCStar.prototype[Symbol.toStringTag]
 
@@ -40,7 +44,8 @@ const bootstrapSignalingServerMultiAddr =
       `/ip4/${signalServerIP()}/tcp/63785/ipfs/${signalServerCID()}`;
 
 const bootstrappers = [
-  bootstrapSignalingServerMultiAddr,
+  ssAddr,
+
   '/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
   '/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z',
   '/ip4/104.236.179.241/tcp/4001/p2p/QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
@@ -56,6 +61,8 @@ const getPeerInfo = async () => {
   return PeerInfo.create()
 }
 
+// const wrtcStar = new WebRTCStar({ wrtc });
+
 const libp2pBundle = async (opts) => {
   // TODO: use opts to make things more configurable
   const peerInfo = await getPeerInfo()
@@ -66,24 +73,31 @@ const libp2pBundle = async (opts) => {
     peerInfo,
     // peerBook,
     modules: {
-      transport: [WebRTCStar],
+      transport: [WebRTCStar, TCP, Websockets],
       streamMuxer: [MPLEX],
       connEncryption: [SECIO],
       pubsub: GossipSub,
-    },
-    // peerDiscovery: [
-    //     wrtcStar.discovery
-    //   ],
-    peerDiscovery: {
-      bootstrap: {
-        interval: 60e3,
-        enabled: true,
-        list: [
-          bootstrappers,
-        ]
-      }
+      peerDiscovery: [
+        MulticastDNS,
+        Bootstrap,
+        // wrtc?
+      ]
     },
     config: {
+      autoDial: true, // auto dial to peers we find when we have less peers than `connectionManager.minPeers`
+      mdns: {
+        interval: MDNS_INTERVAL_MS,
+        enabled: true
+      },
+      peerDiscovery: {
+        bootstrap: {
+          interval: 60e3,
+          enabled: true,
+          list: [
+            bootstrappers,
+          ]
+        },
+      },
       transport: {
         [transportKey]: {
           wrtc

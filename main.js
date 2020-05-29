@@ -93,7 +93,14 @@ async function main () {
 
   p2p.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/63785')
   p2p.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/63786/ws')
+  const p2pServerMultiAddress = `/dns4/${signalServerIP()}/wss/p2p-webrtc-star/p2p/${nodeId}`
+  const webrtcServerMultiAddr = `/ip4/${signalServerIP()}/tcp/63785/ipfs/${nodeId}`
+  const webrtcServerMultiAddr2 = `/ip4/${signalServerIP()}/tcp/15555/ipfs/${nodeId}`
+
   p2p.peerInfo.multiaddrs.add(ssAddr)
+  p2p.peerInfo.multiaddrs.add(p2pServerMultiAddress)
+  p2p.peerInfo.multiaddrs.add(webrtcServerMultiAddr)
+  p2p.peerInfo.multiaddrs.add(webrtcServerMultiAddr2)
 
   const room = new Room(p2p, DEFAULT_TOPIC);
 
@@ -136,13 +143,22 @@ async function main () {
   //   output.log(arguments);
   // });
 
+  p2p.on('peer:connect', (peer) => {
+    output.log('Connection established to:', peer.id.toB58String())	// Emitted when a peer has been found
+  })
+
+  // Emitted when a peer has been found
+  p2p.on('peer:discovery', (peer) => {
+    output.log('Discovered:', peer.id.toB58String())
+  })
+
   network.room.on('subscribed', () => {
     output.log(`Now connected to room: ${DEFAULT_TOPIC}`);
   });
 
   network.room.on('peer joined', (peer) => {
     output.log(`Peer joined the room: ${peer}`);
-    if (peer == nodeId.id) {
+    if (peer == nodeId) {
       if (!configuration.handle) {
         // set default for now
         configuration.handle = nodeId.id;
