@@ -12,6 +12,7 @@ const Bootstrap = require('libp2p-bootstrap')
 const DHT = require('libp2p-kad-dht')
 
 const transportKey = WebRTCStar.prototype[Symbol.toStringTag]
+debugger;
 
 // FINE GRAIN CONFIG OPTIONS
 const MDNS_INTERVAL_MS = 5000 // TODO: make this configurable via env vars or db records
@@ -66,8 +67,6 @@ const getPeerInfo = async () => {
 const libp2pBundle = async (opts) => {
   // TODO: use opts to make things more configurable
   const peerInfo = await getPeerInfo()
-
-  debugger;
 
   return new Libp2p({
     peerInfo,
