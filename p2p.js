@@ -9,6 +9,7 @@ const wrtc = require('wrtc')
 const GossipSub = require('libp2p-gossipsub')
 const MulticastDNS = require('libp2p-mdns')
 const Bootstrap = require('libp2p-bootstrap')
+const DHT = require('libp2p-kad-dht')
 
 const transportKey = WebRTCStar.prototype[Symbol.toStringTag]
 
@@ -80,9 +81,19 @@ const libp2pBundle = async (opts) => {
         MulticastDNS,
         Bootstrap,
         // wrtc?
-      ]
+      ],
+      dht: DHT,
     },
     config: {
+      dht: {                        // The DHT options (and defaults) can be found in its documentation
+        kBucketSize: 20,
+        enabled: true,
+        randomWalk: {
+          enabled: true,            // Allows to disable discovery (enabled by default)
+          interval: 300e3,
+          timeout: 10e3
+        }
+      },
       autoDial: true, // auto dial to peers we find when we have less peers than `connectionManager.minPeers`
       mdns: {
         interval: MDNS_INTERVAL_MS,
