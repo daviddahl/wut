@@ -91,32 +91,24 @@ async function main () {
 
   await p2p.start()
 
-  p2p.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/63785')
-  p2p.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/63786/ws')
+  const addrs = [
+    '/ip4/0.0.0.0/tcp/63785',
+    '/ip4/0.0.0.0/tcp/63786/ws',
+    '/ip4/0.0.0.0/tcp/0',
+    '/ip4/0.0.0.0/tcp/0/ws',
+    `/dns4/${signalServerIP()}/wss/p2p-webrtc-star/p2p/${nodeId}`,
+    `/ip4/${signalServerIP()}/tcp/63785/ipfs/${nodeId}`,
+    `/ip4/${signalServerIP()}/tcp/15555/ipfs/${nodeId}`,
+    `/ip4/${signalServerIP()}/tcp/13579/ipfs/${nodeId}`,
+    `/ip4/${signalServerIP()}/tcp/9090/ipfs/${nodeId}`,
+    "/ip4/0.0.0.0/tcp/13579/ws/p2p-webrtc-star",
+    "/ip4/0.0.0.0/tcp/63785/tcp/p2p-webrtc-star",
+    "/ip4/0.0.0.0/tcp/63786/ws/p2p-webrtc-star",
+  ]
 
-  p2p.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/0')
-  p2p.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/0/ws')
-
-  const p2pServerMultiAddress = `/dns4/${signalServerIP()}/wss/p2p-webrtc-star/p2p/${nodeId}`
-  const webrtcServerMultiAddr = `/ip4/${signalServerIP()}/tcp/63785/ipfs/${nodeId}`
-  const webrtcServerMultiAddr2 = `/ip4/${signalServerIP()}/tcp/15555/ipfs/${nodeId}`
-  const webrtcServerMultiAddr3 = `/ip4/${signalServerIP()}/tcp/13579/ipfs/${nodeId}` // default port
-  const webrtcServerMultiAddr4 = `/ip4/${signalServerIP()}/tcp/9090/ipfs/${nodeId}`
-
-  const webrtcAddr = "/ip4/0.0.0.0/tcp/13579/ws/p2p-webrtc-star"
-  const webrtcAddr2 = "/ip4/0.0.0.0/tcp/63785/tcp/p2p-webrtc-star"
-  const webrtcAddr3 = "/ip4/0.0.0.0/tcp/63786/ws/p2p-webrtc-star"
-
-  p2p.peerInfo.multiaddrs.add(webrtcAddr)
-  p2p.peerInfo.multiaddrs.add(webrtcAddr2)
-  p2p.peerInfo.multiaddrs.add(webrtcAddr3)
-
-  p2p.peerInfo.multiaddrs.add(ssAddr)
-  p2p.peerInfo.multiaddrs.add(p2pServerMultiAddress)
-  p2p.peerInfo.multiaddrs.add(webrtcServerMultiAddr)
-  p2p.peerInfo.multiaddrs.add(webrtcServerMultiAddr2)
-  p2p.peerInfo.multiaddrs.add(webrtcServerMultiAddr3)
-  p2p.peerInfo.multiaddrs.add(webrtcServerMultiAddr4)
+  addrs.forEach((addr) => {
+    p2p.peerInfo.multiaddrs.add(addr)
+  })
 
   const room = new Room(p2p, DEFAULT_TOPIC);
 
