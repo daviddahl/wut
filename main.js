@@ -32,7 +32,13 @@ const {
   HOME_DIR,
 } = require('./lib/config');
 
-const { libp2pBundle } = require('./p2p');
+const {
+  libp2pBundle,
+  signalServerIP,
+  signalServerPort,
+  signalServerCID,
+  ssAddr
+} = require('./p2p');
 
 var configuration = {
   handle: null,
@@ -85,6 +91,10 @@ async function main () {
 
   await p2p.start()
 
+  p2p.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/63785')
+  p2p.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/63786/ws')
+  p2p.peerInfo.multiaddrs.add(ssAddr)
+
   const room = new Room(p2p, DEFAULT_TOPIC);
 
   const network = new Network(configuration, nodeId, room);
@@ -98,6 +108,10 @@ async function main () {
 
   // TODO: Display public key as QR CODE
   output.log(`Your NaCl public key is: \n    ${configuration.keyPair.publicKey}\n`);
+
+  output.log(p2p.peerInfo.multiaddrs)
+  p2p.peerInfo.multiaddrs.forEach(ma => output.log(ma.toString()))
+
   input.focus();
 
   output.log('P2P node is initialized!');
