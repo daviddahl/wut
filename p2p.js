@@ -94,7 +94,10 @@ const libp2pBundle = async (opts) => {
         emitSelf: true,
         signMessages: true,
         strictSigning: true,
-      }
+      },
+      EXPERIMENTAL: {
+        pubsub: true
+      },
     }
   })
 }
