@@ -5,7 +5,7 @@
 */
 
 'use strict';
-
+const PeerInfo = require('peer-info')
 const IPFS = require('ipfs');
 const Room = require('ipfs-pubsub-room');
 
@@ -32,7 +32,7 @@ const {
   HOME_DIR,
 } = require('./lib/config');
 
-const { nodeConfig } = require('./config');
+const { libp2pBundle } = require('./p2p');
 
 var configuration = {
   handle: null,
@@ -73,15 +73,19 @@ async function main () {
 
   configuration.keyPair = { publicKey: pk, secretKey: sk };
 
-  const node = await IPFS.create(nodeConfig);
+  // const node = await IPFS.create({ libp2p: libp2pBundle });
 
   // node.on('error', (err) => {
   //   logger.error(err);
   // });
+  const p2p = await libp2pBundle()
 
-  const version = await node.version();
-  const nodeId = await node.id();
-  const room = new Room(node, DEFAULT_TOPIC);
+  // const version = await node.version();
+  const nodeId = p2p.peerInfo.id._idB58String
+
+  await p2p.start()
+
+  const room = new Room(p2p, DEFAULT_TOPIC);
 
   const network = new Network(configuration, nodeId, room);
 
@@ -96,11 +100,11 @@ async function main () {
   output.log(`Your NaCl public key is: \n    ${configuration.keyPair.publicKey}\n`);
   input.focus();
 
-  output.log('IPFS node is initialized!');
-  output.log('IPFS Version:', version.version);
-  output.log('IPFS Node Id:', nodeId.id);
+  output.log('P2P node is initialized!');
+  // output.log('IPFS Version:', version.version);
+  output.log('P2P Node Id:', nodeId);
 
-  configuration.handle = nodeId.id;
+  configuration.handle = nodeId;
 
   output.log('\n...........................................');
   output.log('................... Welcome ...............');

@@ -12,7 +12,7 @@
     "blessed": "^0.1.81",
     "ipfs": "^0.44.0",
     "ipfs-pubsub-room": "*",
-    "libp2p": "*",
+    "libp2p": "0.27.8",
     "libp2p-gossipsub": "*",
     "libp2p-tcp": "*",
     "libp2p-mplex": "*",
