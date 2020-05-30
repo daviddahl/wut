@@ -92,19 +92,20 @@ async function main () {
   await p2p.start()
 
   const addrs = [
-    `/dns4/188.166.203.82/wss/p2p-webrtc-star/p2p/${nodeId}`,
-    // '/ip4/0.0.0.0/tcp/63785',
-    // '/ip4/0.0.0.0/tcp/63786/ws',
     '/ip4/0.0.0.0/tcp/0',
     '/ip4/0.0.0.0/tcp/0/ws',
+    `/ip4/127.0.0.1/tcp/15555/ws/p2p-webrtc-star/p2p/${p2p.peerInfo.id.toB58String()}`
+    // '/ip4/0.0.0.0/tcp/0',
+    // '/ip4/0.0.0.0/tcp/0/ws',
+    // `/ip4/${signalServerIP()}/tcp/15555/wss/p2p-websocket-star`,
+    // "/ip4/0.0.0.0/tcp/4002",
+    // "/ip4/0.0.0.0/tcp/4003/ws",
+    // "/ip4/127.0.0.1/tcp/4003/ws",
     // `/dns4/${signalServerIP()}/wss/p2p-webrtc-star/p2p/${nodeId}`,
     // `/ip4/${signalServerIP()}/tcp/63785/ipfs/${nodeId}`,
     // `/ip4/${signalServerIP()}/tcp/15555/ipfs/${nodeId}`,
     // `/ip4/${signalServerIP()}/tcp/13579/ipfs/${nodeId}`,
     // `/ip4/${signalServerIP()}/tcp/9090/ipfs/${nodeId}`,
-    "/ip4/0.0.0.0/tcp/13579/ws/p2p-webrtc-star",
-    "/ip4/0.0.0.0/tcp/63785/tcp/p2p-webrtc-star",
-    "/ip4/0.0.0.0/tcp/63786/ws/p2p-webrtc-star",
   ]
 
   addrs.forEach((addr) => {

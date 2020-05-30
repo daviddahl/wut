@@ -76,30 +76,30 @@ const libp2pBundle = async (opts) => {
       streamMuxer: [MPLEX],
       connEncryption: [SECIO],
       pubsub: GossipSub,
-      peerDiscovery: [
-        MulticastDNS,
-        Bootstrap,
+      // peerDiscovery: [
+        //MulticastDNS,
+        // Bootstrap,
         // wrtc?
-      ],
-      dht: DHT,
+      // ],
+      // dht: DHT,
     },
     config: {
       addresses: {
         swarm: [
-          `/ip4/${signalServerIP()}/tcp/9090/wss/p2p-websocket-star`,
+          `/ip4/${signalServerIP()}/tcp/15555/wss/p2p-websocket-star`,
           "/ip4/0.0.0.0/tcp/4002",
-          "/ip4/127.0.0.1/tcp/4003/ws",
+          "/ip4/0.0.0.0/tcp/4003/ws",
         ],
       },
-      dht: {                        // The DHT options (and defaults) can be found in its documentation
-        kBucketSize: 20,
-        enabled: true,
-        randomWalk: {
-          enabled: true,            // Allows to disable discovery (enabled by default)
-          interval: 300e3,
-          timeout: 10e3
-        }
-      },
+      // dht: {                        // The DHT options (and defaults) can be found in its documentation
+      //   kBucketSize: 20,
+      //   enabled: true,
+      //   randomWalk: {
+      //     enabled: true,            // Allows to disable discovery (enabled by default)
+      //     interval: 300e3,
+      //     timeout: 10e3
+      //   }
+      // },
       autoDial: true, // auto dial to peers we find when we have less peers than `connectionManager.minPeers`
       mdns: {
         interval: MDNS_INTERVAL_MS,
@@ -113,7 +113,7 @@ const libp2pBundle = async (opts) => {
           interval: 60e3,
           enabled: true,
           list: [
-            bootstrappers,
+            '/ip4/127.0.0.1/tcp/63785/ipfs/QmWjz6xb8v9K4KnYEwP5Yk75k5mMBCehzWFLCvvQpYxF3d'
           ]
         },
       },
