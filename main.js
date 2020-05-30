@@ -79,11 +79,6 @@ async function main () {
 
   configuration.keyPair = { publicKey: pk, secretKey: sk };
 
-  // const node = await IPFS.create({ libp2p: libp2pBundle });
-
-  // node.on('error', (err) => {
-  //   logger.error(err);
-  // });
   const p2p = await libp2pBundle()
 
   // const version = await node.version();
@@ -91,21 +86,19 @@ async function main () {
 
   await p2p.start()
 
+  const _ssAddr = `/ip4/127.0.0.1/tcp/15555/ws/p2p-webrtc-star`;
+
+  const ssAddr = `${_ssAddr}/p2p/${p2p.peerInfo.id.toB58String()}`
+
+  const bootstrapSignalingServerMultiAddr =
+        `/ip4/${signalServerIP()}/tcp/63785/ipfs/${signalServerCID()}`;
+
+
   const addrs = [
     '/ip4/0.0.0.0/tcp/0',
     '/ip4/0.0.0.0/tcp/0/ws',
-    `/ip4/127.0.0.1/tcp/15555/ws/p2p-webrtc-star/p2p/${p2p.peerInfo.id.toB58String()}`
-    // '/ip4/0.0.0.0/tcp/0',
-    // '/ip4/0.0.0.0/tcp/0/ws',
-    // `/ip4/${signalServerIP()}/tcp/15555/wss/p2p-websocket-star`,
-    // "/ip4/0.0.0.0/tcp/4002",
-    // "/ip4/0.0.0.0/tcp/4003/ws",
-    // "/ip4/127.0.0.1/tcp/4003/ws",
-    // `/dns4/${signalServerIP()}/wss/p2p-webrtc-star/p2p/${nodeId}`,
-    // `/ip4/${signalServerIP()}/tcp/63785/ipfs/${nodeId}`,
-    // `/ip4/${signalServerIP()}/tcp/15555/ipfs/${nodeId}`,
-    // `/ip4/${signalServerIP()}/tcp/13579/ipfs/${nodeId}`,
-    // `/ip4/${signalServerIP()}/tcp/9090/ipfs/${nodeId}`,
+    ssAddr,
+    bootstrapSignalingServerMultiAddr,
   ]
 
   addrs.forEach((addr) => {
@@ -122,6 +115,10 @@ async function main () {
   const input = mainUI.input;
   const peersList = mainUI.peersList;
   const screen = mainUI.screen;
+
+  p2p.on('error', (err) => {
+    output.error(err);
+  });
 
   // TODO: Display public key as QR CODE
   output.log(`Your NaCl public key is: \n    ${configuration.keyPair.publicKey}\n`);

@@ -38,25 +38,12 @@ const signalServerCID = () => {
   return process.env.SIGNAL_SERVER_CID
 };
 
-const signalServerPort = '9090'
+const signalServerPort = '15555'
 
 const ssAddr = `/ip4/${signalServerIP()}/tcp/${signalServerPort}/ws/p2p-webrtc-star`;
 
 const bootstrapSignalingServerMultiAddr =
       `/ip4/${signalServerIP()}/tcp/63785/ipfs/${signalServerCID()}`;
-
-const bootstrappers = [
-  ssAddr,
-  '/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ',
-  '/ip4/104.236.176.52/tcp/4001/p2p/QmSoLnSGccFuZQJzRadHn95W2CrSFmZuTdDWP8HXaHca9z',
-  '/ip4/104.236.179.241/tcp/4001/p2p/QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
-  '/ip4/162.243.248.213/tcp/4001/p2p/QmSoLueR4xBeUbY9WZ9xGUUxunbKWcrNFTDAadQJmocnWm',
-  '/ip4/128.199.219.111/tcp/4001/p2p/QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu',
-  '/ip4/104.236.76.40/tcp/4001/p2p/QmSoLV4Bbm51jM9C4gDYZQ9Cy3U6aXMJDAbzgu2fzaDs64',
-  '/ip4/178.62.158.247/tcp/4001/p2p/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
-  '/ip4/178.62.61.185/tcp/4001/p2p/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3',
-  '/ip4/104.236.151.122/tcp/4001/p2p/QmSoLju6m7xTh3DuokvT3886QRYqxAzb1kShaanJgW36yx'
-]
 
 const getPeerInfo = async () => {
   return PeerInfo.create()
@@ -70,18 +57,15 @@ const libp2pBundle = async (opts) => {
 
   return new Libp2p({
     peerInfo,
-    // peerBook,
     modules: {
       transport: [WebRTCStar, TCP, Websockets],
       streamMuxer: [MPLEX],
       connEncryption: [SECIO],
       pubsub: GossipSub,
-      // peerDiscovery: [
-        //MulticastDNS,
-        // Bootstrap,
-        // wrtc?
-      // ],
-      // dht: DHT,
+      peerDiscovery: [
+        MulticastDNS,
+        Bootstrap,
+      ]
     },
     config: {
       addresses: {
@@ -91,15 +75,6 @@ const libp2pBundle = async (opts) => {
           "/ip4/0.0.0.0/tcp/4003/ws",
         ],
       },
-      // dht: {                        // The DHT options (and defaults) can be found in its documentation
-      //   kBucketSize: 20,
-      //   enabled: true,
-      //   randomWalk: {
-      //     enabled: true,            // Allows to disable discovery (enabled by default)
-      //     interval: 300e3,
-      //     timeout: 10e3
-      //   }
-      // },
       autoDial: true, // auto dial to peers we find when we have less peers than `connectionManager.minPeers`
       mdns: {
         interval: MDNS_INTERVAL_MS,
@@ -128,9 +103,15 @@ const libp2pBundle = async (opts) => {
         signMessages: true,
         strictSigning: true,
       },
-      EXPERIMENTAL: {
-        pubsub: true
-      },
+      dht: {
+      enabled: true,
+      randomWalk: {
+        enabled: true
+      }
+    },
+    EXPERIMENTAL: {
+      pubsub: true
+    }
     }
   })
 }
