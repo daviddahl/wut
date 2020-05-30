@@ -81,26 +81,18 @@ async function main () {
 
   const p2p = await libp2pBundle()
 
-  // const version = await node.version();
   const nodeId = p2p.peerInfo.id._idB58String
 
   await p2p.start()
 
-  // const _ssAddr = `/ip4/127.0.0.1/tcp/15555/ws/p2p-webrtc-star`;
-
-  // const ssAddr = `${_ssAddr}/p2p/${p2p.peerInfo.id.toB58String()}`
-
   const bootstrapSignalingServerMultiAddr =
-        `/ip4/127.0.0.1/tcp/15555/ws/p2p-webrtc-star/p2p/${p2p.peerInfo.id.toB58String()}`
-//        `/ip4/${signalServerIP()}/tcp/15555/ipfs/${signalServerCID()}`;
+        `/ip4/${signalServerIP()}/tcp/15555/ws/p2p-webrtc-star/p2p/${p2p.peerInfo.id.toB58String()}`
 
 
   const addrs = [
     '/ip4/0.0.0.0/tcp/0',
     '/ip4/0.0.0.0/tcp/0/ws',
     bootstrapSignalingServerMultiAddr,
-    // ssAddr,
-    // bootstrapSignalingServerMultiAddr,
   ]
 
   addrs.forEach((addr) => {
@@ -138,6 +130,8 @@ async function main () {
   output.log('...........................................\n');
   output.log('\n\n*** This is the LOBBY. It is *plaintext* group chat ***');
   output.log('\n*** Type "/help" for help ***\n');
+
+  output.log(`\nP2P signal server: ${signalServerIP()}`);
 
   p2p.on('peer:connect', (peer) => {
     output.log('Connection established to:', peer.id.toB58String())	// Emitted when a peer has been found
