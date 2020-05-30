@@ -97,8 +97,8 @@ async function main () {
   const addrs = [
     '/ip4/0.0.0.0/tcp/0',
     '/ip4/0.0.0.0/tcp/0/ws',
-    ssAddr,
-    bootstrapSignalingServerMultiAddr,
+    // ssAddr,
+    // bootstrapSignalingServerMultiAddr,
   ]
 
   addrs.forEach((addr) => {
@@ -116,10 +116,6 @@ async function main () {
   const peersList = mainUI.peersList;
   const screen = mainUI.screen;
 
-  p2p.on('error', (err) => {
-    output.error(err);
-  });
-
   // TODO: Display public key as QR CODE
   output.log(`Your NaCl public key is: \n    ${configuration.keyPair.publicKey}\n`);
 
@@ -129,7 +125,6 @@ async function main () {
   input.focus();
 
   output.log('P2P node is initialized!');
-  // output.log('IPFS Version:', version.version);
   output.log('P2P Node Id:', nodeId);
 
   configuration.handle = nodeId;
@@ -141,14 +136,6 @@ async function main () {
   output.log('...........................................\n');
   output.log('\n\n*** This is the LOBBY. It is *plaintext* group chat ***');
   output.log('\n*** Type "/help" for help ***\n');
-
-  // network.pubsubEmitter.on('subscribed', () => {
-  //   output.log(arguments);
-  // });
-
-  // network.pubsubEmitter.on('message', () => {
-  //   output.log(arguments);
-  // });
 
   p2p.on('peer:connect', (peer) => {
     output.log('Connection established to:', peer.id.toB58String())	// Emitted when a peer has been found

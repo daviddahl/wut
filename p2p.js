@@ -68,13 +68,6 @@ const libp2pBundle = async (opts) => {
       ]
     },
     config: {
-      addresses: {
-        swarm: [
-          `/ip4/${signalServerIP()}/tcp/15555/wss/p2p-websocket-star`,
-          "/ip4/0.0.0.0/tcp/4002",
-          "/ip4/0.0.0.0/tcp/4003/ws",
-        ],
-      },
       autoDial: true, // auto dial to peers we find when we have less peers than `connectionManager.minPeers`
       mdns: {
         interval: MDNS_INTERVAL_MS,
@@ -104,14 +97,11 @@ const libp2pBundle = async (opts) => {
         strictSigning: true,
       },
       dht: {
-      enabled: true,
-      randomWalk: {
-        enabled: true
-      }
-    },
-    EXPERIMENTAL: {
-      pubsub: true
-    }
+        enabled: false,
+        randomWalk: {
+          enabled: false
+        }
+      },
     }
   })
 }
