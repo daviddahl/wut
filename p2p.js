@@ -55,10 +55,12 @@ const libp2pBundle = async (opts) => {
   // TODO: use opts to make things more configurable
   const peerInfo = await getPeerInfo()
 
+  // const wrtcStar = new WebRTCStar({ wrtc })
+
   return new Libp2p({
     peerInfo,
     modules: {
-      transport: [WebRTCStar, TCP, Websockets],
+      transport: [ TCP, Websockets, WebRTCStar ],
       streamMuxer: [MPLEX],
       connEncryption: [SECIO],
       pubsub: GossipSub,
@@ -102,6 +104,9 @@ const libp2pBundle = async (opts) => {
           enabled: false
         }
       },
+      EXPERIMENTAL: {
+        pubsub: true
+      }
     }
   })
 }
