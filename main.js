@@ -8,7 +8,7 @@
 const GossipSub = require('libp2p-gossipsub')
 const PeerInfo = require('peer-info')
 const IPFS = require('ipfs');
-// const Room = require('ipfs-pubsub-room');
+const Room = require('ipfs-pubsub-room');
 
 const wrtc = require('wrtc'); // or require('electron-webrtc')()
 const WStar = require('libp2p-webrtc-star');
@@ -101,9 +101,9 @@ async function main () {
     p2p.peerInfo.multiaddrs.add(addr)
   })
 
-  // const room = new Room(p2p, DEFAULT_TOPIC);
+  const room = new Room(p2p, DEFAULT_TOPIC);
 
-  const network = new Network(configuration, nodeId, p2p);
+  const network = new Network(configuration, nodeId, room);
 
   const mainUI = MainUI(configuration, storage, network);
 
@@ -149,129 +149,128 @@ async function main () {
   output.log(`Pubsub type: ${typeof p2p.pubsub}`)
 
   let temp_topic = '/libp2p/example/chat/1.0.0';
-  p2p.pubsub.subscribe(temp_topic, (msg) => {
-    output.log(`Subscribed fired, raw message: ${msg}`);
-    output.log(`Subscribed to ${temp_topic}`);
+  p2p.pubsub.subscribe(temp_topic, (message) => {
+    // output.log(`sub: ${Object.keys(message)}`) // from,data,seqno,topicIDs,signature,key
+    output.log(message.from);
+    output.log(message.data.toString('utf8'));
+    //output.log(message.seqno.toString());
+    //output.log();
+    message.topicIDs.forEach((topic) => {
+      output.log(topic);
+    })
+    // output.log(message.signature);
+    // output.log(message.key);
   });
 
-  output.log(Object.keys(p2p.pubsub))
+  network.room.on('subscribed', () => {
+    output.log(`Now connected to room: ${DEFAULT_TOPIC}`);
+  });
 
-  // p2p.pubsub.on(temp_topic, (msg) => {
-  //   output.log(`Message recieved`);
-  //   output.log(msg.from);
-  //   output.log(msg);
-  // });
+  network.room.on('peer joined', (peer) => {
+    output.log(`Peer joined the room: ${peer}`);
+    if (peer == nodeId) {
+      if (!configuration.handle) {
+        // set default for now
+        configuration.handle = nodeId.id;
+      }
+      // Its YOU!
+      network.broadcastProfile();
+    }
+  });
 
-
-  // network.room.on('subscribed', () => {
-  //   output.log(`Now connected to room: ${DEFAULT_TOPIC}`);
-  // });
-
-  // network.room.on('peer joined', (peer) => {
-  //   output.log(`Peer joined the room: ${peer}`);
-  //   if (peer == nodeId) {
-  //     if (!configuration.handle) {
-  //       // set default for now
-  //       configuration.handle = nodeId.id;
-  //     }
-  //     // Its YOU!
-  //     network.broadcastProfile();
-  //   }
-  // });
-
-  // network.room.on('peer left', (peer) => {
-  //   output.log(`Peer left: ${peer}`);
-  // });
+  network.room.on('peer left', (peer) => {
+    output.log(`Peer left: ${peer}`);
+  });
 
   const DIRECT_MSG = 'dm';
   const PROFILE_MSG = 'profile';
   const BROADCAST_MSG = 'brodcast';
 
-  // network.room.on('message', (message) => {
-  //   let msg;
+  network.room.on('message', (message) => {
+    let msg;
 
-  //   try {
-  //     msg = JSON.parse(message.data); // a2c??? UTF8Encode
-  //   } catch (ex) {
-  //     return output.log(`Error: Cannot parse badly-formed command.`);
-  //   }
+    try {
+      msg = JSON.parse(message.data); // a2c??? UTF8Encode
+    } catch (ex) {
+      return output.log(`Error: Cannot parse badly-formed command.`);
+    }
 
-  //   if (msg.messageType) {
-  //     if (msg.messageType == PROFILE_MSG) {
-  //       // update peerprofile:
-  //       configuration.peerProfiles[message.from] = {
-  //         id: message.from,
-  //         handle: msg.handle.trim(),
-  //         bio: msg.bio,
-  //         publicKey: convertObjectToUint8(msg.publicKey),
-  //       };
-  //       return output.log(`*** Profile broadcast: ${message.from} is now ${msg.handle}`);
-  //     } else if (msg.messageType == DIRECT_MSG) {
-  //       return handleDirectMessage(message.from, msg);
-  //     } else if (msg.messageType == BROADCAST_MSG) {
-  //       return output.log(`*** Broadcast: ${message.from}: ${msg.content}`);
-  //     }
-  //   }
+    if (msg.messageType) {
+      if (msg.messageType == PROFILE_MSG) {
+        // update peerprofile:
+        configuration.peerProfiles[message.from] = {
+          id: message.from,
+          handle: msg.handle.trim(),
+          bio: msg.bio,
+          publicKey: convertObjectToUint8(msg.publicKey),
+        };
+        return output.log(`*** Profile broadcast: ${message.from} is now ${msg.handle}`);
+      } else if (msg.messageType == DIRECT_MSG) {
+        return handleDirectMessage(message.from, msg);
+      } else if (msg.messageType == BROADCAST_MSG) {
+        return output.log(`*** Broadcast: ${message.from}: ${msg.content}`);
+      }
+    }
 
-  //   // Handle peer refresh request
-  //   if (message.data == 'peer-refresh') {
-  //     network.broadcastProfile(message.from);
-  //   }
+    // Handle peer refresh request
+    if (message.data == 'peer-refresh') {
+      network.broadcastProfile(message.from);
+    }
 
-  //   return output.log(`${message.from}: ${message.data}`);
-  // });
+    return output.log(`${message.from}: ${message.data}`);
+  });
 
-  // const handleDirectMessage = (fromCID, msg) => {
-  //   let ui;
+  const handleDirectMessage = (fromCID, msg) => {
+    let ui;
 
-  //   // Check for existing dmUI
-  //   try {
-  //     ui = e2eMessages[fromCID].ui;
-  //   } catch (ex) {
-  //     // establish the UI, accept first message
-  //     // TODO: whitelisting of publicKeys
-  //     let profile = configuration.peerProfiles[fromCID];
-  //     ui = dmUI(screen, profile, storage, network);
+    // Check for existing dmUI
+    try {
+      ui = e2eMessages[fromCID].ui;
+    } catch (ex) {
+      // establish the UI, accept first message
+      // TODO: whitelisting of publicKeys
+      let profile = configuration.peerProfiles[fromCID];
+      ui = dmUI(screen, profile, storage, network);
 
-  //     e2eMessages[fromCID] = {ui: ui};
-  //   }
+      e2eMessages[fromCID] = {ui: ui};
+    }
 
-  //   try {
-  //     let plaintext = openDirectMessage(msg, configuration);
-  //     if (plaintext == null) {
-  //       ui.output.log(`*** ${APP_TITLE}: Error: Message is null.`);
-  //     } else {
-  //       ui.output.log(`${msg.fromHandle}: ${plaintext}`);
-  //     }
-  //   } catch (ex) {
-  //     ui.output.log(`***`);
-  //     ui.output.log(`*** ${APP_TITLE}: Cannot decrypt messages from ${msg.handle}`);
-  //     logger.error(`${ex} ... \n ${ex.stack}`);
-  //     ui.output.log(`***`);
-  //     return;
-  //   }
-  // };
+    try {
+      let plaintext = openDirectMessage(msg, configuration);
+      if (plaintext == null) {
+        ui.output.log(`*** ${APP_TITLE}: Error: Message is null.`);
+      } else {
+        ui.output.log(`${msg.fromHandle}: ${plaintext}`);
+      }
+    } catch (ex) {
+      ui.output.log(`***`);
+      ui.output.log(`*** ${APP_TITLE}: Cannot decrypt messages from ${msg.handle}`);
+      logger.error(`${ex} ... \n ${ex.stack}`);
+      ui.output.log(`***`);
+      return;
+    }
+  };
 
-  // let peers = network.getPeers();
-  // configuration.peers = [peers];
-  // if (peers.length) {
-  //   peersList.setData(configuration.peers);
-  //   screen.render();
-  // }
+  let peers = network.getPeers();
+  configuration.peers = [peers];
+  if (peers.length) {
+    peersList.setData(configuration.peers);
+    screen.render();
+  }
 
-  // let interval = setInterval(() => {
-  //   let peers = network.getPeers();
-  //   configuration.peers = [peers];
-  //   if (peers.length) {
-  //     peersList.setData(configuration.peers);
-  //     screen.render();
-  //   }
-  // }, PEER_REFRESH_MS);
+  let interval = setInterval(() => {
+    let peers = network.getPeers();
+    configuration.peers = [peers];
+    if (peers.length) {
+      peersList.setData(configuration.peers);
+      screen.render();
+    }
+  }, PEER_REFRESH_MS);
 
+  process.on('uncaughtException', (error) => {
+    output.error(error);
+    logger.error(error);
+  });
 }
-
-// process.on('uncaughtException', (error) => {
-//   logger.error(error);
-// });
 
 main();
