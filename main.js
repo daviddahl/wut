@@ -91,13 +91,13 @@ async function main () {
   const ssAddr = `${_ssAddr}/p2p/${p2p.peerInfo.id.toB58String()}`
 
   const bootstrapSignalingServerMultiAddr =
-        `/ip4/${signalServerIP()}/tcp/63785/ipfs/${signalServerCID()}`;
+        `/ip4/${signalServerIP()}/tcp/15555/ipfs/${signalServerCID()}`;
 
 
   const addrs = [
     '/ip4/0.0.0.0/tcp/0',
     '/ip4/0.0.0.0/tcp/0/ws',
-    // ssAddr,
+    ssAddr,
     // bootstrapSignalingServerMultiAddr,
   ]
 
