@@ -87,6 +87,8 @@ const libp2pBundle = async (opts) => {
       addresses: {
         swarm: [
           `/ip4/${signalServerIP()}/tcp/9090/wss/p2p-websocket-star`,
+          "/ip4/0.0.0.0/tcp/4002",
+          "/ip4/127.0.0.1/tcp/4003/ws",
         ],
       },
       dht: {                        // The DHT options (and defaults) can be found in its documentation
