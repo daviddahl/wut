@@ -86,18 +86,20 @@ async function main () {
 
   await p2p.start()
 
-  const _ssAddr = `/ip4/127.0.0.1/tcp/15555/ws/p2p-webrtc-star`;
+  // const _ssAddr = `/ip4/127.0.0.1/tcp/15555/ws/p2p-webrtc-star`;
 
-  const ssAddr = `${_ssAddr}/p2p/${p2p.peerInfo.id.toB58String()}`
+  // const ssAddr = `${_ssAddr}/p2p/${p2p.peerInfo.id.toB58String()}`
 
   const bootstrapSignalingServerMultiAddr =
-        `/ip4/${signalServerIP()}/tcp/15555/ipfs/${signalServerCID()}`;
+        `/ip4/127.0.0.1/tcp/15555/ws/p2p-webrtc-star/p2p/${p2p.peerInfo.id.toB58String()}`
+//        `/ip4/${signalServerIP()}/tcp/15555/ipfs/${signalServerCID()}`;
 
 
   const addrs = [
     '/ip4/0.0.0.0/tcp/0',
     '/ip4/0.0.0.0/tcp/0/ws',
-    ssAddr,
+    bootstrapSignalingServerMultiAddr,
+    // ssAddr,
     // bootstrapSignalingServerMultiAddr,
   ]
 
