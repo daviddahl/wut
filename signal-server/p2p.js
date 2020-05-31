@@ -28,7 +28,6 @@ try {
   idJSON = demoIdJson
 }
 
-debugger;
 
 let ssAddr;
 
