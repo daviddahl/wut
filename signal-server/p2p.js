@@ -10,17 +10,34 @@ const GossipSub = require('libp2p-gossipsub')
 const MulticastDNS = require('libp2p-mdns')
 const Bootstrap = require('libp2p-bootstrap')
 const DHT = require('libp2p-kad-dht')
+const SignalingServer = require('libp2p-webrtc-star/src/sig-server')
+const demoIdJson = require('./demoId.json')
 
 const transportKey = WebRTCStar.prototype[Symbol.toStringTag]
-debugger;
+
+let idJSON;
+
+try {
+  idJSON = {
+    id: process.env.WUT_SIGNAL_SERVER_CID,
+    privKey: process.env.WUT_SIGNAL_SERVER_PRIV_KEY,
+    pubKey: process.env.WUT_SIGNAL_SERVER_PUB_KEY
+  }
+} catch (ex) {
+  console.error(ex)
+  idJSON = demoIdJson
+}
+
+
+let ssAddr;
 
 // FINE GRAIN CONFIG OPTIONS
 const MDNS_INTERVAL_MS = 5000 // TODO: make this configurable via env vars or db records
 const CONNECTION_MGR_POLL_MS = 5000
 const RELAY_ENABLED = true
 const HOP_ENABLED = true
-const DHT_ENABLED = false
-const RANDOM_WALK_ENABLED = false
+const DHT_ENABLED = true
+const RANDOM_WALK_ENABLED = true
 const PUBSUB_ENABLED = true
 const METRICS_ENABLED = true
 
@@ -40,25 +57,33 @@ const signalServerCID = () => {
 
 const signalServerPort = '15555'
 
-const ssAddr = `/ip4/${signalServerIP()}/tcp/${signalServerPort}/ws/p2p-webrtc-star`;
-
-const bootstrapSignalingServerMultiAddr =
-      `/ip4/${signalServerIP()}/tcp/63785/ipfs/${signalServerCID()}`;
-
 const getPeerInfo = async () => {
-  return PeerInfo.create()
+  return PeerInfo.create(idJSON)
 }
 
 const libp2pBundle = async (opts) => {
   // TODO: use opts to make things more configurable
   const peerInfo = await getPeerInfo()
 
+  // Wildcard listen on TCP and Websocket
+  peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/63785')
+  peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/63786/ws')
+
+  const signalingServer = await SignalingServer.start({
+    port: 15555
+  })
+  ssAddr = `/ip4/${signalingServer.info.host}/tcp/${signalingServer.info.port}/ws/p2p-webrtc-star`
+  console.info(`Signaling server running at ${ssAddr}`)
+  peerInfo.multiaddrs.add(`${ssAddr}/p2p/${peerInfo.id.toB58String()}`)
+
+  debugger;
+
   return new Libp2p({
     peerInfo,
     modules: {
       transport: [ WebRTCStar, TCP, Websockets ],
-      streamMuxer: [MPLEX],
-      connEncryption: [SECIO],
+      streamMuxer: [ MPLEX ],
+      connEncryption: [ SECIO ],
       pubsub: GossipSub,
       peerDiscovery: [
         MulticastDNS,
@@ -76,26 +101,20 @@ const libp2pBundle = async (opts) => {
       EXPERIMENTAL: {
         pubsub: true
       },
-      Addresses: {
-        swarm: [
-          `/ip4/${signalServerIP()}/tcp/63785/ipfs/QmczHEW3Pc2a4ZkFBUVLVv5QbucCFbc1ALwo8d5uzgmsio`,
-        ],
-      },
       autoDial: true, // auto dial to peers we find when we have less peers than `connectionManager.minPeers`
       mdns: {
         interval: MDNS_INTERVAL_MS,
         enabled: true
       },
       peerDiscovery: {
-        webRTCStar: {
-          enabled: true
-        },
+        // webRTCStar: {
+        //   enabled: true
+        // },
         bootstrap: {
           interval: 60e3,
           enabled: true,
           list: [
-            `/ip4/${signalServerIP()}/tcp/63785/ipfs/QmczHEW3Pc2a4ZkFBUVLVv5QbucCFbc1ALwo8d5uzgmsio`,
-            `/ip4/127.0.0.1/tcp/63785/ipfs/QmczHEW3Pc2a4ZkFBUVLVv5QbucCFbc1ALwo8d5uzgmsio`,
+            `/ip4/127.0.0.1/tcp/63785/ipfs/${peerInfo.id.toB58String()}`,
           ]
         },
       },
@@ -103,13 +122,6 @@ const libp2pBundle = async (opts) => {
         [transportKey]: {
           wrtc
         },
-      },
-      transportManager: {
-        addresses: [
-          '/ip4/0.0.0.0/tcp/9090/ws',
-          '/ip4/0.0.0.0/tcp/0/ws',
-          '/ip4/0.0.0.0/tcp/0/',
-        ]
       },
       pubsub: {
         enabled: true,

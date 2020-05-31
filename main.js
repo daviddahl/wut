@@ -5,6 +5,7 @@
 */
 
 'use strict';
+const GossipSub = require('libp2p-gossipsub')
 const PeerInfo = require('peer-info')
 const IPFS = require('ipfs');
 const Room = require('ipfs-pubsub-room');
@@ -92,6 +93,9 @@ async function main () {
   const addrs = [
     '/ip4/0.0.0.0/tcp/0',
     '/ip4/0.0.0.0/tcp/0/ws',
+    '/ip4/0.0.0.0/tcp/9090/ws',
+    '/ip4/127.0.0.1/tcp/0/ws',
+    '/ip4/127.0.0.1/tcp/0',
     bootstrapSignalingServerMultiAddr,
   ]
 
@@ -142,11 +146,11 @@ async function main () {
     output.log('Discovered:', peer.id.toB58String())
   })
 
-  network.room.on('subscribed', () => {
+  room.on('subscribed', () => {
     output.log(`Now connected to room: ${DEFAULT_TOPIC}`);
   });
 
-  network.room.on('peer joined', (peer) => {
+  room.on('peer joined', (peer) => {
     output.log(`Peer joined the room: ${peer}`);
     if (peer == nodeId) {
       if (!configuration.handle) {
@@ -158,7 +162,7 @@ async function main () {
     }
   });
 
-  network.room.on('peer left', (peer) => {
+  room.on('peer left', (peer) => {
     output.log(`Peer left: ${peer}`);
   });
 
@@ -166,7 +170,7 @@ async function main () {
   const PROFILE_MSG = 'profile';
   const BROADCAST_MSG = 'brodcast';
 
-  network.room.on('message', (message) => {
+  room.on('message', (message) => {
     let msg;
 
     try {
@@ -231,7 +235,7 @@ async function main () {
     }
   };
 
-  let peers = network.getPeers();
+  let peers = room.getPeers();
   configuration.peers = [peers];
   if (peers.length) {
     peersList.setData(configuration.peers);
@@ -239,7 +243,7 @@ async function main () {
   }
 
   let interval = setInterval(() => {
-    let peers = network.getPeers();
+    let peers = room.getPeers();
     configuration.peers = [peers];
     if (peers.length) {
       peersList.setData(configuration.peers);
