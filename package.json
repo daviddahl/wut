@@ -4,7 +4,7 @@
   "main": "main.js",
   "private": true,
   "scripts": {
-    "test": "test.js"
+    "test": "jest"
   },
   "author": "David Dahl <ddahl@nulltxt.se>",
   "license": "MIT",
@@ -12,20 +12,22 @@
     "blessed": "^0.1.81",
     "ipfs": "^0.44.0",
     "ipfs-pubsub-room": "*",
+    "it-all": "^1.0.1",
     "libp2p": "0.27.8",
     "libp2p-pubsub": "*",
     "libp2p-gossipsub": "*",
-    "libp2p-tcp": "*",
     "libp2p-mplex": "*",
     "libp2p-secio": "*",
+    "libp2p-tcp": "*",
+    "libp2p-webrtc-star": "*",
     "peer-info": "*",
-    "it-all": "^1.0.1",
     "tweetnacl": "",
     "tweetnacl-util": "",
     "uuid": "^8.1.0",
     "winston": "^3.2.1",
-    "wrtc": "*",
-    "libp2p-webrtc-star": "*"
+    "wrtc": "*"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "jest": "^26.0.1"
+  }
 }
