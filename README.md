@@ -6,14 +6,11 @@ Serverless, IPFS, Tweetnacl-js-based chat application for terminal in an `ncurse
 
 ## Goals
 
-* [x] `Major issue`: Make pubsub work outside local networks: Works now via webrtc-star server as bootstrap node
-* [x] Serverless 'lobby' chat multiple participants
-* [x] Serverless E2E encrypted chat for 2 participants (at first)
-* [x] As nerdy as possbile, hence the `ncurses` style
+### Things to do, ranked
+
 * [ ] Tab-completion of peer names, commands
 * [ ] Tab / arrows to focus UI elements
 * [ ] Social Proofs, see: https://github.com/IBM/ipfs-social-proof
-* [ ] Child_process for IPFS, workers for crypto? Discuss.
 * [ ] Tests
 * [ ] DMs List UI
 * [ ] Paste screenshots into chat
@@ -23,14 +20,23 @@ Serverless, IPFS, Tweetnacl-js-based chat application for terminal in an `ncurse
 * [ ] Encrypted file sharing via tweetnacl-js & IPFS file storage
 * [ ] SES-based plugins, (See: Secure ECMAScript https://github.com/Agoric/SES-shim )
 * [ ] Group encrypted chat
+* [ ] Child_process for IPFS, workers for crypto? Discuss.
 * [ ] Emojis
 * [ ] Encrypted message persistence in IPFS via OrbitDB, js-threads?
+
+### Fixed
+
+* [x] `Major issue`: Make pubsub work outside local networks: Works now via webrtc-star server as bootstrap node
+* [x] Serverless 'lobby' chat multiple participants
+* [x] Serverless E2E encrypted chat for 2 participants (at first)
+* [x] As nerdy as possbile, hence the `ncurses` style
+
 
 ## Install
 
 Requirements: node 12, yarn
 
-See signaling server and client configuration README first: ![](signal-server/README.md)
+See signaling server and client configuration README first: [README.md](signal-server/README.md)
 
 `npm install -g yarn`
 
