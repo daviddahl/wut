@@ -61,12 +61,10 @@ async function main () {
   let sk = convertObjectToUint8(_keyPair.secretKey);
 
   configuration.keyPair = { publicKey: pk, secretKey: sk };
-  debugger;
-  const p2p = await libp2pBundle()
 
+  const p2p = await libp2pBundle()
   const nodeId = p2p.peerInfo.id._idB58String
 
-  debugger;
   await p2p.start()
 
   const addrs = [
@@ -120,11 +118,10 @@ async function main () {
 
   room.on('peer joined', (peer) => {
     console.log(`Peer joined the room: ${peer}`);
-    let peerId = peer.id.toB58String()
-    if (peerId == nodeId) {
+    if (peer == nodeId) {
       if (!configuration.handle) {
         // set default for now
-        configuration.handle = peerId;
+        configuration.handle = peer;
       }
       // Its YOU!
       room.broadcastProfile();
@@ -185,7 +182,6 @@ async function main () {
     configuration.peers = [peers];
     if (peers.length) {
       console.log('Peers: ', configuration.peers);
-      screen.render();
     }
   }, PEER_REFRESH_MS);
 
