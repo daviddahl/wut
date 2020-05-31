@@ -25,7 +25,6 @@ try {
   }
 } catch (ex) {
   console.error(ex)
-  console.error(ex.stack)
   idJSON = demoIdJson
 }
 
