@@ -105,7 +105,7 @@ async function main () {
 
   const room = new Room(p2p, DEFAULT_TOPIC);
 
-  const network = new Network(configuration, nodeId);
+  const network = new Network(configuration, nodeId, room);
 
   const mainUI = MainUI(configuration, storage, network);
 
