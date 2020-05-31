@@ -49,8 +49,6 @@ const getPeerInfo = async () => {
   return PeerInfo.create()
 }
 
-// const wrtcStar = new WebRTCStar({ wrtc });
-
 const libp2pBundle = async (opts) => {
   // TODO: use opts to make things more configurable
   const peerInfo = await getPeerInfo()
@@ -58,7 +56,7 @@ const libp2pBundle = async (opts) => {
   return new Libp2p({
     peerInfo,
     modules: {
-      transport: [WebRTCStar, TCP, Websockets],
+      transport: [ WebRTCStar, TCP, Websockets ],
       streamMuxer: [MPLEX],
       connEncryption: [SECIO],
       pubsub: GossipSub,
@@ -68,6 +66,21 @@ const libp2pBundle = async (opts) => {
       ]
     },
     config: {
+      relay: {           // Circuit Relay options (this config is part of libp2p core configurations)
+        enabled: true,   // Allows you to dial and accept relayed connections. Does not make you a relay.
+        hop: {
+          enabled: true, // Allows you to be a relay for other peers
+          active: true   // You will attempt to dial destination peers if you are not connected to them
+        }
+      },
+      EXPERIMENTAL: {
+        pubsub: true
+      },
+      Addresses: {
+        swarm: [
+          `/ip4/${signalServerIP()}/tcp/63785/ipfs/QmczHEW3Pc2a4ZkFBUVLVv5QbucCFbc1ALwo8d5uzgmsio`,
+        ],
+      },
       autoDial: true, // auto dial to peers we find when we have less peers than `connectionManager.minPeers`
       mdns: {
         interval: MDNS_INTERVAL_MS,
@@ -81,14 +94,22 @@ const libp2pBundle = async (opts) => {
           interval: 60e3,
           enabled: true,
           list: [
-            '/ip4/127.0.0.1/tcp/63785/ipfs/QmWjz6xb8v9K4KnYEwP5Yk75k5mMBCehzWFLCvvQpYxF3d'
+            `/ip4/${signalServerIP()}/tcp/63785/ipfs/QmczHEW3Pc2a4ZkFBUVLVv5QbucCFbc1ALwo8d5uzgmsio`,
+            `/ip4/127.0.0.1/tcp/63785/ipfs/QmczHEW3Pc2a4ZkFBUVLVv5QbucCFbc1ALwo8d5uzgmsio`,
           ]
         },
       },
       transport: {
         [transportKey]: {
           wrtc
-        }
+        },
+      },
+      transportManager: {
+        addresses: [
+          '/ip4/0.0.0.0/tcp/9090/ws',
+          '/ip4/0.0.0.0/tcp/0/ws',
+          '/ip4/0.0.0.0/tcp/0/',
+        ]
       },
       pubsub: {
         enabled: true,
