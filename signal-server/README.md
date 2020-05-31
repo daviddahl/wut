@@ -26,8 +26,10 @@ const idJSON = {
 
 ```
 
+(See `./demoId.json` for an example JSON'd PeerInfo.id)
+
 ```bash
-# Configure your environemnt like so:
+# Configure your environment like so:
 
 export WUT_SIGNAL_SERVER_CID='Qmfoo123456...etc'
 export WUT_SIGNAL_SERVER_PRIV_KEY='CAASpwkwggSjAgEAAoIBAQDKNKwPX4DJhYdGreAVaJy+efhIfbyczR0...etc'
