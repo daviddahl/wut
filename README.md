@@ -30,6 +30,8 @@ Serverless, IPFS, Tweetnacl-js-based chat application for terminal in an `ncurse
 
 Requirements: node 12, yarn
 
+See signaling server and client configuration README first: ![](signal-server/README.md)
+
 `npm install -g yarn`
 
 `git clone git@github.com:daviddahl/wut.git`
