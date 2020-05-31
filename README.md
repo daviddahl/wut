@@ -6,7 +6,7 @@ Serverless, IPFS, Tweetnacl-js-based chat application for terminal in an `ncurse
 
 ## Goals
 
-* [ ] `Major issue`: Make pubsub work outside local networks
+* [x] `Major issue`: Make pubsub work outside local networks: Works now via webrtc-star server as bootstrap node
 * [x] Serverless 'lobby' chat multiple participants
 * [x] Serverless E2E encrypted chat for 2 participants (at first)
 * [x] As nerdy as possbile, hence the `ncurses` style
@@ -42,4 +42,4 @@ Requirements: node 12, yarn
 
 ## Testing
 
-`yarn test` 
+`yarn test`
