@@ -8,6 +8,7 @@ Serverless, IPFS, Tweetnacl-js-based chat application for terminal in an `ncurse
 
 ### Things to do, ranked
 
+* [ ] DM UI is broken and needs UX love
 * [ ] Tab-completion of peer names, commands
 * [ ] Tab / arrows to focus UI elements
 * [ ] Social Proofs, see: https://github.com/IBM/ipfs-social-proof
