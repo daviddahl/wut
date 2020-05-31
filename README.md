@@ -39,3 +39,7 @@ Requirements: node 12, yarn
 `yarn install`
 
 `node main.js`
+
+## Testing
+
+`yarn test` 
