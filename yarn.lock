@@ -5467,7 +5467,7 @@ libp2p-mplex@*, libp2p-mplex@^0.9.3:
     it-pushable "^1.3.1"
     varint "^5.0.0"
 
-libp2p-pubsub@~0.4.0, libp2p-pubsub@~0.4.2:
+libp2p-pubsub@*, libp2p-pubsub@~0.4.0, libp2p-pubsub@~0.4.2:
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/libp2p-pubsub/-/libp2p-pubsub-0.4.4.tgz#ca2ee85dc0bd6f2b39ab38df522bf6d3f7a74336"
   integrity sha512-/nFEWjaeKhDLDgXpoqZa1HivvHAQH6RCX9T+VTzQO2aUVoHWOFnrXqBeu5ffjD2DSyyaKtRs1qsLjPVsk3p2zw==
@@ -6209,7 +6209,7 @@ node-modules-regexp@^1.0.0:
   resolved "https://registry.yarnpkg.com/node-modules-regexp/-/node-modules-regexp-1.0.0.tgz#8d9dbe28964a4ac5712e9131642107c71e90ec40"
   integrity sha1-jZ2+KJZKSsVxLpExZCEHxx6Q7EA=
 
-node-notifier@^7.0.0:
+node-notifier@*, node-notifier@^7.0.0:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/node-notifier/-/node-notifier-7.0.1.tgz#a355e33e6bebacef9bf8562689aed0f4230ca6f9"
   integrity sha512-VkzhierE7DBmQEElhTGJIoiZa1oqRijOtgOlsXg32KrJRXsPy0NXFBqWGW/wTswnJlDCs5viRYaqWguqzsKcmg==

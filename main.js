@@ -19,7 +19,7 @@ const all = require('it-all');
 const { v4: uuidv4 } = require('uuid');
 
 const { box } = require('tweetnacl');
-
+const notifier = require('node-notifier')
 const { dmUI } = require('./lib/dm-ui');
 const { MainUI } = require('./lib/main-ui');
 const { Network } = require('./lib/network');
@@ -192,6 +192,10 @@ async function main () {
       } else if (msg.messageType == DIRECT_MSG) {
         return handleDirectMessage(message.from, msg);
       } else if (msg.messageType == BROADCAST_MSG) {
+        notifier.notify({
+          title: APP_TITLE,
+          message: `${message.from.substring(0, 9)}: ${msg.content}` // TODO: replace Qm CID with handle if it exists
+        });
         return output.log(`*** Broadcast: ${message.from}: ${msg.content}`);
       }
     }
