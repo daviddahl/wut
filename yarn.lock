@@ -3592,7 +3592,7 @@ ipfs-http-response@^0.5.0:
     multihashes "~0.4.14"
     p-try-each "^1.0.1"
 
-ipfs-pubsub-room@*:
+ipfs-pubsub-room@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/ipfs-pubsub-room/-/ipfs-pubsub-room-2.0.1.tgz#b147a3a351d60190dcf80daa30b985047da32b4b"
   integrity sha512-FdLGkxo84sHMwneRwL+dxqk2ctU3105ikS3whsbWlrwnXkMDZvDQfAclko5lJ8PNvvZOnDpUJAv//AZzFvpE9A==
@@ -5351,7 +5351,7 @@ libp2p-floodsub@^0.20.0:
     protons "^1.0.1"
     time-cache "^0.3.0"
 
-libp2p-gossipsub@*, libp2p-gossipsub@^0.3.0:
+libp2p-gossipsub@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/libp2p-gossipsub/-/libp2p-gossipsub-0.3.0.tgz#d1fb6bce3dc236d7eb8ec2235531f9e6025d6cef"
   integrity sha512-tnqf9nr0vc98M8OrpXBMdPWFHxOQqJ9pfdBHgKJ+x4s5VoyLpvjvp8ffHRBGBPestqv2/Pk/64gu+25DCeBU7w==
@@ -5453,7 +5453,7 @@ libp2p-mdns@^0.13.1:
     peer-id "~0.13.3"
     peer-info "~0.17.0"
 
-libp2p-mplex@*, libp2p-mplex@^0.9.3:
+libp2p-mplex@^0.9.3, libp2p-mplex@^0.9.5:
   version "0.9.5"
   resolved "https://registry.yarnpkg.com/libp2p-mplex/-/libp2p-mplex-0.9.5.tgz#47cb8a426e9792ce89e92f24dc3485735aa15be0"
   integrity sha512-3YHtuhE5GWtWzsvz3zIwZMLHxMcwpPnI2HgT/FZzvi8kYF00Y6psZtzC9p+yDiu9deeq5ZlmcbKzKA36k8VoSQ==
@@ -5467,7 +5467,7 @@ libp2p-mplex@*, libp2p-mplex@^0.9.3:
     it-pushable "^1.3.1"
     varint "^5.0.0"
 
-libp2p-pubsub@*, libp2p-pubsub@~0.4.0, libp2p-pubsub@~0.4.2:
+libp2p-pubsub@^0.4.4, libp2p-pubsub@~0.4.0, libp2p-pubsub@~0.4.2:
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/libp2p-pubsub/-/libp2p-pubsub-0.4.4.tgz#ca2ee85dc0bd6f2b39ab38df522bf6d3f7a74336"
   integrity sha512-/nFEWjaeKhDLDgXpoqZa1HivvHAQH6RCX9T+VTzQO2aUVoHWOFnrXqBeu5ffjD2DSyyaKtRs1qsLjPVsk3p2zw==
@@ -5493,7 +5493,7 @@ libp2p-record@^0.7.3, libp2p-record@~0.7.0:
     multihashing-async "^0.8.0"
     protons "^1.0.1"
 
-libp2p-secio@*, libp2p-secio@^0.12.2:
+libp2p-secio@^0.12.2, libp2p-secio@^0.12.5:
   version "0.12.5"
   resolved "https://registry.yarnpkg.com/libp2p-secio/-/libp2p-secio-0.12.5.tgz#312058eefe66f440eb169ce3c6684f6f432e0369"
   integrity sha512-S4/i7Bye/utt7FBmJS97XNLALAzvKmKLuqnwpUn3lWI1ns+Hx+tWu5lMFIobJu1BNvxapzCHkkq8H5jqqdzlRQ==
@@ -5511,7 +5511,7 @@ libp2p-secio@*, libp2p-secio@^0.12.2:
     peer-id "^0.13.6"
     protons "^1.0.2"
 
-libp2p-tcp@*, libp2p-tcp@^0.14.1, libp2p-tcp@^0.14.5:
+libp2p-tcp@^0.14.1, libp2p-tcp@^0.14.5:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/libp2p-tcp/-/libp2p-tcp-0.14.5.tgz#a0a9e5afa49e874d436c9ba5334f30124786d8bc"
   integrity sha512-BLTtCe7jMYCfzrY1j4KAa3iByMZD5fgkH1bQ0WNCn/ye3w5mDemEgOT6+4p8/wuv2e0QXldGRB/DHUqB8lyNFw==
@@ -5536,7 +5536,7 @@ libp2p-utils@^0.1.0, libp2p-utils@^0.1.2, libp2p-utils@~0.1.0:
     ip-address "^6.1.0"
     multiaddr "^7.3.0"
 
-libp2p-webrtc-star@*, libp2p-webrtc-star@^0.17.10:
+libp2p-webrtc-star@^0.17.10:
   version "0.17.10"
   resolved "https://registry.yarnpkg.com/libp2p-webrtc-star/-/libp2p-webrtc-star-0.17.10.tgz#4784723b26d1eb46924258d43f9a206be3e07da3"
   integrity sha512-9kJhfeu8t33V8dqsNCV5JkUPUMaUV4mw0rhSLeq5aXLAQ0nyxyGua6XdCNxW4Pz1tDMF0H24AAiH/0bnhmvHkQ==
@@ -5582,7 +5582,7 @@ libp2p-websockets@^0.13.3:
     multiaddr-to-uri "^5.0.0"
     p-timeout "^3.2.0"
 
-libp2p@0.27.8, libp2p@^0.27.7:
+libp2p@^0.27.7, libp2p@^0.27.8:
   version "0.27.8"
   resolved "https://registry.yarnpkg.com/libp2p/-/libp2p-0.27.8.tgz#a55151d97e1635f893e35b9082d16ba738e1f610"
   integrity sha512-0pJrdJ1byAMzDfq+ZZ1WEJXJTofKDsz9f7ezjMjxZxLUlpvb4ncrE3TaRo5TkH1y+D8doFab9q6c9MjST2UVDA==
@@ -6209,7 +6209,7 @@ node-modules-regexp@^1.0.0:
   resolved "https://registry.yarnpkg.com/node-modules-regexp/-/node-modules-regexp-1.0.0.tgz#8d9dbe28964a4ac5712e9131642107c71e90ec40"
   integrity sha1-jZ2+KJZKSsVxLpExZCEHxx6Q7EA=
 
-node-notifier@*, node-notifier@^7.0.0:
+node-notifier@^7.0.0, node-notifier@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/node-notifier/-/node-notifier-7.0.1.tgz#a355e33e6bebacef9bf8562689aed0f4230ca6f9"
   integrity sha512-VkzhierE7DBmQEElhTGJIoiZa1oqRijOtgOlsXg32KrJRXsPy0NXFBqWGW/wTswnJlDCs5viRYaqWguqzsKcmg==
@@ -6724,7 +6724,7 @@ peer-id@^0.13.11, peer-id@^0.13.12, peer-id@^0.13.5, peer-id@^0.13.6, peer-id@~0
     multihashes "~0.4.15"
     protons "^1.0.2"
 
-peer-info@*, peer-info@^0.17.0, peer-info@^0.17.5, peer-info@~0.17.0:
+peer-info@^0.17.0, peer-info@^0.17.5, peer-info@~0.17.0:
   version "0.17.5"
   resolved "https://registry.yarnpkg.com/peer-info/-/peer-info-0.17.5.tgz#80afc709e03069cf94a29d8fcfa0426140fa7b69"
   integrity sha512-ebbbnvdCnb0onWuW+QNXO4KvLPuQ+kih3zezhov2uxHqA6VLbtzMUyQ06IHtwYLr50AYYWyBOSn17g4zEBsFpw==
@@ -8117,20 +8117,20 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
-tweetnacl-util@:
+tweetnacl-util@^0.15.1:
   version "0.15.1"
   resolved "https://registry.yarnpkg.com/tweetnacl-util/-/tweetnacl-util-0.15.1.tgz#b80fcdb5c97bcc508be18c44a4be50f022eea00b"
   integrity sha512-RKJBIj8lySrShN4w6i/BonWp2Z/uxwC3h4y7xsRrpP59ZboCd0GpEVsOnMDYLMmKBpYhb5TgHzZXy7wTfYFBRw==
-
-tweetnacl@:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
-  integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
   integrity sha1-WuaBd/GS1EViadEIr6k/+HQ/T2Q=
+
+tweetnacl@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
+  integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
 
 type-check@~0.3.2:
   version "0.3.2"
@@ -8516,7 +8516,7 @@ write-file-atomic@^3.0.0:
     signal-exit "^3.0.2"
     typedarray-to-buffer "^3.1.5"
 
-wrtc@*:
+wrtc@^0.4.5:
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/wrtc/-/wrtc-0.4.5.tgz#6839540904bf38f13e6e3fb27ee1448e8458bbb6"
   integrity sha512-AEqbxwz8LX9bRrSI8UTn6bFiGj8/28nguYJ0RTk1905HZwM8Rx16D1oX0FfJHWmYHEg5XhODGcVa33d9ORHFyw==
