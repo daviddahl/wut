@@ -194,7 +194,7 @@ async function main () {
       } else if (msg.messageType == BROADCAST_MSG) {
         notifier.notify({
           title: APP_TITLE,
-          message: `${message.from}: ${msg.content}` // TODO: replace Qm CID with handle if it exists
+          message: `${message.from.substring(0, 9)}: ${msg.content}` // TODO: replace Qm CID with handle if it exists
         });
         return output.log(`*** Broadcast: ${message.from}: ${msg.content}`);
       }
