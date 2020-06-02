@@ -176,7 +176,7 @@ async function main () {
     let from = message.from.substring(0, 9)
 
     try {
-      msg = JSON.parse(message.data); // a2c??? UTF8Encode
+      msg = JSON.parse(message.data)
     } catch (ex) {
       return output.log(`Error: Cannot parse badly-formed command.`);
     }
