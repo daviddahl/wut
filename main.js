@@ -198,7 +198,7 @@ async function main () {
           title: APP_TITLE,
           message: `${from}: ${msg.content}` // TODO: replace Qm CID with handle if it exists
         });
-        return output.log(`***: ${from}: ${msg.content}`);
+        return output.log(`${from}: ${msg.content}`);
       }
     }
 
