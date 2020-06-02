@@ -155,7 +155,7 @@ async function main () {
     if (peer == nodeId) {
       if (!configuration.handle) {
         // set default for now
-        configuration.handle = nodeId.id;
+        configuration.handle = nodeId;
       }
       // Its YOU!
       network.broadcastProfile();
@@ -173,6 +173,8 @@ async function main () {
   room.on('message', (message) => {
     let msg;
 
+    let from = message.from.substring(0, 9)
+
     try {
       msg = JSON.parse(message.data); // a2c??? UTF8Encode
     } catch (ex) {
@@ -188,15 +190,15 @@ async function main () {
           bio: msg.bio,
           publicKey: convertObjectToUint8(msg.publicKey),
         };
-        return output.log(`*** Profile broadcast: ${message.from} is now ${msg.handle}`);
+        return output.log(`*** Profile: ${from} is now ${msg.handle}`);
       } else if (msg.messageType == DIRECT_MSG) {
         return handleDirectMessage(message.from, msg);
-      } else if (msg.messageType == BROADCAST_MSG) {
+      } else if (msg.messageType == BROADCAST_MSG && message.from !== nodeId) {
         notifier.notify({
           title: APP_TITLE,
-          message: `${message.from.substring(0, 9)}: ${msg.content}` // TODO: replace Qm CID with handle if it exists
+          message: `${from}: ${msg.content}` // TODO: replace Qm CID with handle if it exists
         });
-        return output.log(`*** Broadcast: ${message.from}: ${msg.content}`);
+        return output.log(`***: ${from}: ${msg.content}`);
       }
     }
 
@@ -205,7 +207,10 @@ async function main () {
       network.broadcastProfile(message.from);
     }
 
-    return output.log(`${message.from}: ${message.data}`);
+    if (message.from === nodeId) {
+      return output.log(`Me: ${msg.content}`);
+    }
+    return output.log(`${from}: ${msg.content}`);
   });
 
   const handleDirectMessage = (fromCID, msg) => {
